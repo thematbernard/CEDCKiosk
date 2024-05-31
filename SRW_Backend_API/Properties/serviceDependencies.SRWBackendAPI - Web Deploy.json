@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/SRWBackendAPIapi/apis/SRWBackendAPI",
+      "type": "apis.azure"
+    },
+    "mssql1": {
+      "serviceConnectorResourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Web/sites/SRWBackendAPI/providers/Microsoft.ServiceLinker/linkers/ConnectionStringsAzure_Database_62C3F4E546",
+      "secretStore": "AzureAppSettings",
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/sqlserver-engagementhub-001/databases/SRWVirtualHub",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:Azure_Database",
+      "dynamicId": null
+    }
+  }
+}

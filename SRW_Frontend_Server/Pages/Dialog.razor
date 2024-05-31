@@ -1,0 +1,64 @@
+﻿@using Data;
+
+<MudDialog>
+    <DialogContent>
+        @if (!LoginProcessing.loggedIn)
+        {
+            <MudText Align="Align.Center" Color="Color.Error">Must be logged in to make a room reservation.</MudText>
+        }
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="numReserved" Label="Standard" Variant="Variant.Text" Min="0" Max="10" />
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudDatePicker Label="Pickup Date" @bind-Date="startDate" DisableToolbar="true" />
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudDatePicker Label="Return Date" @bind-Date="endDate" DisableToolbar="true" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Reserve</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+    private DateTime? startDate = DateTime.Today;
+    private DateTime? endDate = DateTime.Today;
+    int numReserved = 0;
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    bool loading = true;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        loading = false;
+    }
+}

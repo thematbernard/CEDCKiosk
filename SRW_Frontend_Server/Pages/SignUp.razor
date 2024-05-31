@@ -1,0 +1,138 @@
+﻿@page "/Signup"
+@using SRW_Frontend_Server.DTOs
+@inject NavigationManager uriHelper;
+
+
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Sign Up</MudText>
+</div>
+
+
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+</MudGrid>
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+</MudGrid>
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="Email" Label="Email" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+</MudGrid>
+<MudGrid Class ="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Filled" Margin="Margin.Dense" InputType="InputType.Password" />
+    </MudItem>
+</MudGrid>
+<MudText Align="Align.Center">Password must be at least 12 characters long and must contain at least 1 number, 1 uppercase letter, and 1 symbol.</MudText>
+@if (!String.IsNullOrEmpty(Password))
+{
+    if(Password.Length < 12 | !Password.Any(char.IsDigit) | !SpecialChars(Password) | !Password.Any(char.IsUpper))
+    {
+        <MudText Align="Align.Center" Color="Color.Error">Password must follow rules above.</MudText>
+        allowSignIn = false;
+    }
+    else
+    {
+        allowSignIn = true;
+    }
+}
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="ConfirmPassword" Label="Re-Type Password" Variant="Variant.Filled" Margin="Margin.Dense" InputType="InputType.Password" />
+    </MudItem>
+</MudGrid>
+@if (!String.Equals(Password, ConfirmPassword))
+{
+    <MudText Align="Align.Center" Color="Color.Error">Passwords do not match. Try again.</MudText>
+    allowSignIn = false;
+}
+else
+{
+    allowSignIn = true;
+}
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="Phone" Label="Phone Number (optional)" Variant="Variant.Filled" Margin="Margin.Dense" />
+    </MudItem>
+</MudGrid>
+<MudGrid>
+    <MudItem xs="3"></MudItem>
+    <MudButton OnClick="CreateUser">Sign Up</MudButton>
+</MudGrid>
+
+
+@code {
+    private string FirstName { get; set; }
+    private string LastName { get; set; }
+    private string Email { get; set; }
+    private string Password { get; set; }
+    private string ConfirmPassword { get; set; }
+    private string? Phone { get; set; }
+    bool allowSignIn = true;
+
+    private IConfigurationRoot? configuration;
+    string baseURL { get; set; }
+    private UserDTO userDTO = new UserDTO();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+    }
+
+    async Task CreateUser()
+    {
+        try
+        {
+            if (!allowSignIn)
+            {
+                return;
+            }
+            userDTO.User_Email = Email;
+            userDTO.User_First_Name = FirstName;
+            userDTO.User_Last_Name = LastName;
+            userDTO.User_Phone = Phone;
+            var pass = BCrypt.Net.BCrypt.EnhancedHashPassword(Password, 13);
+            userDTO.User_Password = pass;
+            string apiEndpoint = "/api/User";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiURL, userDTO);
+
+            uriHelper.NavigateTo("/Login", forceLoad: true);
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    public static bool SpecialChars(string passCheck)
+    {
+        if(passCheck.Any(ch => !Char.IsLetterOrDigit(ch)))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}

@@ -1,0 +1,1835 @@
+﻿@page "/AdminUI"
+@using SRW_Frontend_Server.Data;
+@using SRW_Frontend_Server.DTOs;
+@using System.Text.RegularExpressions;
+
+<div class="pa-10">
+    <MudSelect @bind-Value="operation" T="string" Label="Operation" AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@("Create")" />
+        <MudSelectItem Value="@("Read")"/>
+        <MudSelectItem Value="@("Update")" />
+        <MudSelectItem Value="@("Delete")" />
+    </MudSelect>
+    <MudSelect @bind-Value="data" T="string" Label="Data" AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@("Assistance")" />
+        <MudSelectItem Value="@("Dataset")" />
+        <MudSelectItem Value="@("DatasetType")" />
+        <MudSelectItem Value="@("Equipment")" />
+        <MudSelectItem Value="@("Function")" />
+        <MudSelectItem Value="@("Image")" />
+        <MudSelectItem Value="@("Location")" />
+        <MudSelectItem Value="@("Opportunity")" />
+        <MudSelectItem Value="@("OpportunityType")" />
+        <MudSelectItem Value="@("Registration")" />
+        <MudSelectItem Value="@("Rental")" />
+        <MudSelectItem Value="@("Reservation")" />
+        <MudSelectItem Value="@("Resource")" />
+        <MudSelectItem Value="@("ResourceTag")" />
+        <MudSelectItem Value="@("Role")" />
+        <MudSelectItem Value="@("Room")" />
+        <MudSelectItem Value="@("RoomType")" />
+        <MudSelectItem Value="@("Sector")" />
+        <MudSelectItem Value="@("Tag")" />
+        <MudSelectItem Value="@("Training")" />
+        <MudSelectItem Value="@("User")" />
+        <MudSelectItem Value="@("UserRole")" />
+        <MudSelectItem Value="@("UserRoom")" />
+    </MudSelect>
+
+    @if (String.Equals(operation, "Update") || String.Equals(operation, "Delete"))
+    {
+        <MudTextField @bind-Value="id" Label="ID" Variant="Variant.Outlined"></MudTextField>
+        if(String.Equals(operation,"Delete")){
+            <MudButton OnClick="LoadData">Execute</MudButton>
+        }
+    }
+    @if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+    {
+        switch (data)
+        {
+            case "Assistance":
+                <MudTextField @bind-Value="first_name" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="last_name" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="phone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="resolved" Label="Resolved?" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Dataset":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="link" Label="Link" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="sector_ID" Label="Sector ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="datasetType_ID" Label="Dataset Type ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "DatasetType":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Equipment":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="quantity" Label="Quantity" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="available" Label="Number Available" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label="Image ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="role_ID" Label="Role ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Function":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="address" Label="Address" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label ="Image ID" Variant ="Variant.Outlined"></MudTextField>
+                break;
+            case "Image":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="address" Label="Address" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Location":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="street" Label="Street" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="city" Label="City" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="county" Label="County" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="state" Label="State" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="country" Label="Country" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="zip" Label="Zip" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Opportunity":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="phone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="host_name" Label="Host Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="start_date" Label="Start Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="end_date" Label="End Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="role_ID" Label="Role ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="location_ID" Label="Location ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label="Image ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="opportunityType_ID" Label="Opportunity Type ID" Variant="Variant.Outlined"></MudTextField>
+                break;  
+            case "OpportunityType":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Registration":
+                <MudTextField @bind-Value="notification" Label="Notification" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="user_ID" Label="User ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="opportunity_ID" Label="Opportunity ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Rental":
+                <MudTextField @bind-Value="start_date" Label="Start Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="end_date" Label="End Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="approved" Label="Approved?" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="returned" Label="Returned?" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="user_ID" Label="User ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="equipment_ID" Label="Equipment ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Reservation":
+                <MudTextField @bind-Value="start_date" Label="Start Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="end_date" Label="End Date" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="notification" Label="Notification" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="user_ID" Label="User ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="room_ID" Label="Room ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Resource":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="phone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="address" Label="Website" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="eligibility" Label="Eligibility" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label="Image ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="location_ID" Label="Location ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="tag_ID" Label="Tag ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "ResourceTag":
+                <MudTextField @bind-Value="resource_ID" Label="Resource ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="tag_ID" Label="Tag ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Role":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Room":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="number" Label="Number" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="floor" Label="Floor" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label="Image ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="roomType_ID" Label="Room Type ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "RoomType":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Sector":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Tag":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "Training":
+                <MudTextField @bind-Value="name" Label="Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="certificate" Label="Certificate" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="address" Label="Link" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="description" Label="Description" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="image_ID" Label="Image ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "User":
+                <MudTextField @bind-Value="first_name" Label="First Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="last_name" Label="Last Name" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="phone" Label="Phone" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="email" Label="Email" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="password" Label="Password" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="role_ID" Label="Role ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "UserRole":
+                <MudTextField @bind-Value="user_ID" Label="User ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="role_ID" Label="Role ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+            case "UserRoom":
+                <MudTextField @bind-Value="user_ID" Label="User ID" Variant="Variant.Outlined"></MudTextField>
+                <MudTextField @bind-Value="room_ID" Label="Room ID" Variant="Variant.Outlined"></MudTextField>
+                break;
+        }
+        <MudButton OnClick="LoadData">Execute</MudButton>
+    }
+    @if (String.Equals(operation, "Read"))
+    {
+        <MudButton OnClick="LoadData">Execute</MudButton>
+        @switch (data)
+        {
+            case "Assistance":
+                if(Assistances != null){
+                    <MudTable Items="@Assistances" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Assistance_ID</MudTh>
+                            <MudTh>Assistance_First_Name</MudTh>
+                            <MudTh>Assistance_Last_Name</MudTh>
+                            <MudTh>Assistance_Email</MudTh>
+                            <MudTh>Assistance_Phone</MudTh>
+                            <MudTh>Description</MudTh>
+                            <MudTh>Resolved?</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Assistance_ID</MudTd>
+                            <MudTd DataLabel="First Name">@context.Assistance_First_Name</MudTd>
+                            <MudTd DataLabel="Last Name">@context.Assistance_Last_Name</MudTd>
+                            <MudTd DataLabel="Email">@context.Assistance_Email</MudTd>
+                            <MudTd DataLabel="Phone">@context.Assistance_Phone</MudTd>
+                            <MudTd DataLabel="Description">@context.Assistance_Description</MudTd>
+                            <MudTd DataLabel="Resolved?">@context.Assistance_Resolved</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Dataset":
+                if(Datasets != null)
+                {
+                    <MudTable Items="@Datasets" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Dataset_ID</MudTh>
+                            <MudTh>Dataset_Name</MudTh>
+                            <MudTh>Dataset_Link</MudTh>
+                            <MudTh>DatasetType_ID</MudTh>
+                            <MudTh>DatasetType_Name</MudTh>
+                            <MudTh>Sector_ID</MudTh>
+                            <MudTh>Sector_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Dataset_ID</MudTd>
+                            <MudTd DataLabel="First_Name">@context.Dataset_Name</MudTd>
+                            <MudTd DataLabel="Link">@context.Dataset_Link</MudTd>
+                            <MudTd DataLabel="DatasetType_ID">@context.DatasetType_ID</MudTd>
+                            <MudTd DataLabel="DatasetType_Name">@context.DatasetType.DatasetType_Name</MudTd>
+                            <MudTd DataLabel="Sector_ID">@context.Sector_ID</MudTd>
+                            <MudTd DataLabel="Sector_Name">@context.Sector.Sector_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "DatasetType":
+                if(DatasetTypes != null)
+                {
+                    <MudTable Items="@DatasetTypes" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>DatasetType_ID</MudTh>
+                            <MudTh>DatasetType_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.DatasetType_ID</MudTd>
+                            <MudTd DataLabel="First Name">@context.DatasetType_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Equipment":
+                if(Equipments != null)
+                {
+                    <MudTable Items="@Equipments" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Equipment_ID</MudTh>
+                            <MudTh>Equipment_Name</MudTh>
+                            <MudTh>Equipment_Description</MudTh>
+                            <MudTh>Equipment_Quantity</MudTh>
+                            <MudTh>Equipment_Available</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                            <MudTh>Role_ID</MudTh>
+                            <MudTh>Role_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Equipment_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Equipment_Name</MudTd>
+                            <MudTd DataLabel="Description">@context.Equipment_Description</MudTd>
+                            <MudTd DataLabel="Quantity">@context.Equipment_Quantity</MudTd>
+                            <MudTd DataLabel="Available">@context.Equipment_Available</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                            <MudTd DataLabel="Role ID">@context.Role_ID</MudTd>
+                            <MudTd DataLabel="Role Name">@context.Role.Role_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Function":
+                if(Functions != null)
+                {
+                    <MudTable Items="@Functions" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Function_ID</MudTh>
+                            <MudTh>Function_Name</MudTh>
+                            <MudTh>Function_Address</MudTh>
+                            <MudTh>Function_Description</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Function_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Function_Name</MudTd>
+                            <MudTd DataLabel="Description">@context.Function_Address</MudTd>
+                            <MudTd DataLabel="Quantity">@context.Function_Description</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Image":
+                if(Images != null)
+                {
+                    <MudTable Items="@Images" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Image_ID</MudTh>
+                            <MudTh>Image_Name</MudTh>
+                            <MudTh>Image_Address</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Image_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Image_Name</MudTd>
+                            <MudTd DataLabel="Description">@context.Image_Address</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Location":
+                if (Locations != null)
+                {
+                    <MudTable Items="@Locations" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Location_ID</MudTh>
+                            <MudTh>Location_Name</MudTh>
+                            <MudTh>Location_Street</MudTh>
+                            <MudTh>Location_City</MudTh>
+                            <MudTh>Location_County</MudTh>
+                            <MudTh>Location_State</MudTh>
+                            <MudTh>Location_Zip</MudTh>
+                            <MudTh>Location_Country</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Location_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Location_Name</MudTd>
+                            <MudTd DataLabel="Street">@context.Location_Street</MudTd>
+                            <MudTd DataLabel="City">@context.Location_City</MudTd>
+                            <MudTd DataLabel="County">@context.Location_County</MudTd>
+                            <MudTd DataLabel="State">@context.Location_State</MudTd>
+                            <MudTd DataLabel="Zip">@context.Location_Zip</MudTd>
+                            <MudTd DataLabel="Country">@context.Location_Country</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Opportunity":
+                if(Opportunitys != null)
+                {
+                    <MudTable Items="@Opportunitys" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Opportunity_ID</MudTh>
+                            <MudTh>Opportunity_Name</MudTh>
+                            <MudTh>Opportunity_Host_Name</MudTh>
+                            <MudTh>Opportunity_Email</MudTh>
+                            <MudTh>Opportunity_Phone</MudTh>
+                            <MudTh>Opportunity_Start_Date</MudTh>
+                            <MudTh>Opportunity_End_Date</MudTh>
+                            <MudTh>Opportunity_Description</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                            <MudTh>OpportunityType_ID</MudTh>
+                            <MudTh>Location_ID</MudTh>
+                            <MudTh>Role_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Opportunity_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Opportunity_Name</MudTd>
+                            <MudTd DataLabel="Host Name">@context.Opportunity_Host_Name</MudTd>
+                            <MudTd DataLabel="Email">@context.Opportunity_Email</MudTd>
+                            <MudTd DataLabel="Phone">@context.Opportunity_Phone</MudTd>
+                            <MudTd DataLabel="Start Date">@context.Opportunity_Start_Date</MudTd>
+                            <MudTd DataLabel="End Date">@context.Opportunity_End_Date</MudTd>
+                            <MudTd DataLabel="Description">@context.Opportunity_Description</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                            <MudTd DataLabel="Opportunity Type ID">@context.OpportunityType_ID</MudTd>
+                            <MudTd DataLabel="Location ID">@context.Location_ID</MudTd>
+                            <MudTd DataLabel="Role ID">@context.Role_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "OpportunityType":
+                if(OpportunityTypes != null)
+                {
+                    <MudTable Items="@OpportunityTypes" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>OpportunityType_ID</MudTh>
+                            <MudTh>OpportunityType_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.OpportunityType_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.OpportunityType_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Registration":
+                if(Registrations != null)
+                {
+                    <MudTable Items="@Registrations" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>OpportunityType_ID</MudTh>
+                            <MudTh>OpportunityType_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Registration_ID</MudTd>
+                            <MudTd DataLabel="Notification">@context.Registration_Notification</MudTd>
+                            <MudTd DataLabel="User ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="Opportunity ID">@context.Opportunity_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Rental":
+                if(Rentals != null)
+                {
+                    <MudTable Items="@Rentals" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Rental_ID</MudTh>
+                            <MudTh>Rental_Start_Date</MudTh>
+                            <MudTh>Rental_End_Date</MudTh>
+                            <MudTh>Rental_Approved</MudTh>
+                            <MudTh>Rental_Returned</MudTh>
+                            <MudTh>User_ID</MudTh>
+                            <MudTh>Equipment_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Rental_ID</MudTd>
+                            <MudTd DataLabel="Start Date">@context.Rental_Start_Date</MudTd>
+                            <MudTd DataLabel="End Date">@context.Rental_End_Date</MudTd>
+                            <MudTd DataLabel="Rental Approved">@context.Rental_Approved</MudTd>
+                            <MudTd DataLabel="Rental Returned">@context.Rental_Returned</MudTd>
+                            <MudTd DataLabel="User ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="Equipment ID">@context.Equipment_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Reservation":
+                if(Reservations != null){
+                    <MudTable Items="@Reservations" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Reservation_ID</MudTh>
+                            <MudTh>Reservation_Start_Date</MudTh>
+                            <MudTh>Reservation_End_Date</MudTh>
+                            <MudTh>Reservation_Notification</MudTh>
+                            <MudTh>User_ID</MudTh>
+                            <MudTh>Room_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Reservation_ID</MudTd>
+                            <MudTd DataLabel="Start Date">@context.Reservation_Start_Date</MudTd>
+                            <MudTd DataLabel="End Date">@context.Reservation_End_Date</MudTd>
+                            <MudTd DataLabel="Notification">@context.Reservation_Notification</MudTd>
+                            <MudTd DataLabel="User ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="Room ID">@context.Room_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Resource":
+                if(Resources != null){
+                    <MudTable Items="@Resources" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Resource_ID</MudTh>
+                            <MudTh>Resource_Name</MudTh>
+                            <MudTh>Resource_Phone</MudTh>
+                            <MudTh>Resource_Website</MudTh>
+                            <MudTh>Resource_Eligibility</MudTh>
+                            <MudTh>Resource_Description</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                            <MudTh>Location_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Resource_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Resource_Name</MudTd>
+                            <MudTd DataLabel="Phone">@context.Resource_Phone</MudTd>
+                            <MudTd DataLabel="Website">@context.Resource_Website</MudTd>
+                            <MudTd DataLabel="Eligibility">@context.Resource_Eligibility</MudTd>
+                            <MudTd DataLabel="Description">@context.Resource_Description</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                            <MudTd DataLabel="Location ID">@context.Location_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "ResourceTag":
+                if(ResourceTags != null){
+                    <MudTable Items="@ResourceTags" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Resource_ID</MudTh>
+                            <MudTh>Tag_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Resource ID">@context.Resource_ID</MudTd>
+                            <MudTd DataLabel="Tag ID">@context.Tag_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Role":
+                if(Roles != null){
+                    <MudTable Items="@Roles" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Role_ID</MudTh>
+                            <MudTh>Role_Name</MudTh>
+                            <MudTh>Role_Description</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Role_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Role_Name</MudTd>
+                            <MudTd DataLabel="Description">@context.Role_Description</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Room":
+                if(Rooms != null){
+                    <MudTable Items="@Rooms" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Room_ID</MudTh>
+                            <MudTh>Room_Name</MudTh>
+                            <MudTh>Room_Number</MudTh>
+                            <MudTh>Room_Floor</MudTh>
+                            <MudTh>Room_Description</MudTh>
+                            <MudTh>RoomType_ID</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Room_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Room_Name</MudTd>
+                            <MudTd DataLabel="Room Number">@context.Room_Number</MudTd>
+                            <MudTd DataLabel="Floor">@context.Room_Floor</MudTd>
+                            <MudTd DataLabel="Description">@context.Room_Description</MudTd>
+                            <MudTd DataLabel="Room Type ID">@context.RoomType_ID</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "RoomType":
+                if(RoomTypes != null)
+                {
+                    <MudTable Items="@RoomTypes" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>RoomType_ID</MudTh>
+                            <MudTh>RoomType_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.RoomType_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.RoomType_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Sector":
+                @if (Sectors != null)
+                {
+                    <MudTable Items="@Sectors" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Sector_ID</MudTh>
+                            <MudTh>Sector_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Sector_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Sector_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Tag":
+                if(Tags != null){
+                    <MudTable Items="@Tags" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Tag_ID</MudTh>
+                            <MudTh>Tag_Name</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Tag_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Tag_Name</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "Training":
+                if(Trainings != null){
+                    <MudTable Items="@Trainings" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>Training_ID</MudTh>
+                            <MudTh>Training_Name</MudTh>
+                            <MudTh>Training_Certificate</MudTh>
+                            <MudTh>Training_Link</MudTh>
+                            <MudTh>Training_Description</MudTh>
+                            <MudTh>Image_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.Training_ID</MudTd>
+                            <MudTd DataLabel="Name">@context.Training_Name</MudTd>
+                            <MudTd DataLabel="Certificate">@context.Training_Certificate</MudTd>
+                            <MudTd DataLabel="Link">@context.Training_Link</MudTd>
+                            <MudTd DataLabel="Description">@context.Training_Description</MudTd>
+                            <MudTd DataLabel="Image ID">@context.Image_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "User":
+                if(Users != null){
+                    <MudTable Items="@Users" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>User_ID</MudTh>
+                            <MudTh>User_First_Name</MudTh>
+                            <MudTh>User_Last_Name</MudTh>
+                            <MudTh>User_Email</MudTh>
+                            <MudTh>User_Phone</MudTh>
+                            <MudTh>User_Password</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="First Name">@context.User_First_Name</MudTd>
+                            <MudTd DataLabel="Last Name">@context.User_Last_Name</MudTd>
+                            <MudTd DataLabel="Email">@context.User_Email</MudTd>
+                            <MudTd DataLabel="Phone">@context.User_Phone</MudTd>
+                            <MudTd DataLabel="Password">@context.User_Password</MudTd>
+
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "UserRole":
+                if(UserRoles != null){
+                    <MudTable Items="@UserRoles" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>User_ID</MudTh>
+                            <MudTh>Role_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="User ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="Role ID">@context.Role_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+            case "UserRoom":
+                if(UserRooms != null)
+                {
+                    <MudTable Items="@UserRooms" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+                        <HeaderContent>
+                            <MudTh>User_ID</MudTh>
+                            <MudTh>Room_ID</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="User ID">@context.User_ID</MudTd>
+                            <MudTd DataLabel="Role ID">@context.Room_ID</MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+                break;
+        }
+    }
+</div>
+
+
+
+@code {
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    private bool loading = true;
+    bool resolved { get; set; }
+    bool notification { get; set; }
+    bool approved {get;set;}
+    bool returned { get; set; }
+    string operation { get; set; }
+    string name { get; set; }
+    string host_name { get; set; }
+    string link { get; set; }
+    string data { get; set; }
+    string first_name {get;set;}
+    string last_name {get;set;}
+    string eligibility { get; set; }
+    string email { get; set; }
+    string phone {get;set;}
+    string description { get; set; }
+    string address { get; set; }
+    string street {get;set;}
+    string certificate { get; set; }
+    string country { get; set; }
+    string county { get; set; }
+    string city {get;set;}
+    string password { get; set; }
+    int equipment_ID { get; set; }
+    int location_ID { get; set; }
+    int user_ID { get; set; }
+    int opportunity_ID { get; set; }
+    int opportunityType_ID { get; set; }
+    int room_ID {get;set;}
+    int roomType_ID { get; set; }
+    int resource_ID {get;set;}
+    int tag_ID { get; set; }
+    int number {get;set;}
+    int floor { get; set; }
+    int return_ID{ get; set; }
+    DateTime start_date {get;set;}
+    DateTime end_date { get; set; }
+    string state { get; set; }
+    string zip { get; set; }
+    int sector_ID { get; set; }
+    int datasetType_ID { get; set; }
+    int id { get; set; }
+    int quantity { get; set; } = 0;
+    int available { get; set; } = 0;
+    int image_ID { get; set; } = 0;
+    int role_ID { get; set; } = 0;
+    private DatasetDTO updateDataset = new DatasetDTO();
+    private SectorDTO sectorDTO { get; set; }
+    private DatasetTypeDTO datasetTypeDTO { get; set; }
+    private List<AssistanceDTO> Assistances;
+    private List<DatasetDTO> Datasets;
+    private List<DatasetTypeDTO> DatasetTypes;
+    private List<EquipmentDTO> Equipments;
+    private List<FunctionDTO> Functions;
+    private List<ImageDTO> Images;
+    private List<LocationDTO> Locations;
+    private List<OpportunityDTO> Opportunitys;
+    private List<OpportunityTypeDTO> OpportunityTypes;
+    private List<RegistrationDTO> Registrations;
+    private List<RentalDTO> Rentals;
+    private List<ReservationDTO> Reservations;
+    private List<ResourceDTO> Resources;
+    private List<ResourceTagDTO> ResourceTags;
+    private List<RoleDTO> Roles;
+    private List<RoomDTO> Rooms;
+    private List<RoomTypeDTO> RoomTypes;
+    private List<SectorDTO> Sectors;
+    private List<TagDTO> Tags;
+    private List<TrainingDTO> Trainings;
+    private List<UserDTO> Users;
+    private List<UserRoleDTO> UserRoles;
+    private List<UserRoomDTO> UserRooms;
+
+    string apiEndpoint { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+        switch (data)
+        {
+            case "Assistance":
+                await Assistance(operation);
+                break;
+            case "Dataset":
+                await Dataset(operation);
+                break;
+            case "DatasetType":
+                await DatasetType(operation);
+                break;
+            case "Equipment":
+                await Equipment(operation);
+                break;
+            case "Function":
+                await Function(operation);
+                break;
+            case "Image":
+                await Image(operation);
+                break;
+            case "Location":
+                await Location(operation);
+                break;
+            case "Opportunity":
+                await Opportunity(operation);
+                break;
+            case "OpportunityType":
+                await OpportunityType(operation);
+                break;
+            case "Registration":
+                await Registration(operation);
+                break;
+            case "Rental":
+                await Rental(operation);
+                break;
+            case "Reservation":
+                await Reservation(operation);
+                break;
+            case "Resource":
+                await Resource(operation);
+                break;
+            case "ResourceTag":
+                await ResourceTag(operation);
+                break;
+            case "Role":
+                await Role(operation);
+                break;
+            case "Room":
+                await Room(operation);
+                break;
+            case "RoomType":
+                await RoomType(operation);
+                break;
+            case "Sector":
+                await Sector(operation);
+                break;
+            case "Tag":
+                await Tag(operation);
+                break;
+            case "Training":
+                await Training(operation);
+                break;
+            case "User":
+                await User(operation);
+                break;
+            case "UserRole":
+                await UserRole(operation);
+                break;
+            case "UserRoom":
+                await UserRoom(operation);
+                break;
+        }
+        loading = false;
+    }
+
+    async Task CreateDTO<T>(string apiEndpoint,T DTO, string dataset)
+    {
+        try
+        {
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiURL,DTO);
+            var returnValue = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.Write("Success");
+                Console.Write(returnValue);
+                if (String.Equals(dataset, "user"))
+                {
+                    var useridString = Regex.Match(returnValue, @"""\buser_ID\b\"":(\d+)").Groups[1].Value;
+                    int userid = Convert.ToInt32(useridString);
+                    user_ID = userid;
+                }else if (String.Equals(dataset, "resource"))
+                {
+                    var resourceidString = Regex.Match(returnValue, @"""\bresource_ID\b\"":(\d+)").Groups[1].Value;
+                    int resourceid = Convert.ToInt32(resourceidString);
+                    resource_ID = resourceid;
+                }
+            }
+            else
+            {
+                Console.Write("Failure");
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    async Task<List<T>> ReadDTO<T>(string apiEndpoint)
+    {
+        try{
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var DTO = await response.Content.ReadFromJsonAsync<List<T>>();
+                return DTO;
+            }
+            return null;
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+
+    async Task UpdateDTO<T>(string apiEndpoint, T updateDTO)
+    {
+        try
+        {
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PutAsJsonAsync(apiURL, updateDataset);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.Write("Success");
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+
+    async Task DeleteDTO(string apiEndpoint)
+    {
+        string apiURL = baseURL + apiEndpoint;
+
+        using var httpClient = new HttpClient();
+        var response = await httpClient.DeleteAsync(apiURL);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.Write("Success");
+        }
+    }
+
+    async Task Assistance(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            AssistanceDTO assistanceDTO = new AssistanceDTO()
+                {
+                    Assistance_First_Name = first_name,
+                    Assistance_Last_Name = last_name,
+                    Assistance_Description = description,
+                    Assistance_Email = email,
+                    Assistance_Phone = phone,
+                    Assistance_Resolved = resolved
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Assistance";
+                await CreateDTO(apiEndpoint, assistanceDTO, "assistance");
+                first_name = "";
+                last_name = "";
+                description = "";
+                email = "";
+                phone = "";
+                resolved = false;
+
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Assistance" + id;
+                await UpdateDTO(apiEndpoint, assistanceDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Assistance" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }
+        else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Assistance";
+            Assistances = await ReadDTO<AssistanceDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Dataset(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            DatasetDTO datasetDTO = new DatasetDTO()
+                {
+                    Dataset_Name = name,
+                    Dataset_Link = link,
+                    DatasetType_ID = datasetType_ID,
+                    Sector_ID = sector_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Dataset";
+                await CreateDTO(apiEndpoint, datasetDTO,"dataset");
+                name = "";
+                link = "";
+                datasetType_ID = 0;
+                sector_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Dataset" + id;
+                await UpdateDTO(apiEndpoint, datasetDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Dataset" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Dataset";
+            Datasets = await ReadDTO<DatasetDTO>(apiEndpoint);
+        }
+    }
+
+    async Task DatasetType(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            DatasetTypeDTO datasetTypeDTO = new DatasetTypeDTO();
+            datasetTypeDTO.DatasetType_Name = name;
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/DatasetType";
+                await CreateDTO(apiEndpoint, datasetTypeDTO,"datasetType");
+                name = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/DatasetType" + id;
+                await UpdateDTO(apiEndpoint, datasetTypeDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/DatasetType" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            Console.WriteLine("In here!");
+            apiEndpoint = "/api/DatasetType";
+            DatasetTypes = await ReadDTO<DatasetTypeDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Equipment(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            EquipmentDTO equipmentDTO = new EquipmentDTO()
+                {
+                    Equipment_Name = name,
+                    Equipment_Available = 0,
+                    Equipment_Description = description,
+                    Equipment_Quantity = quantity
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Equipment";
+                await CreateDTO(apiEndpoint, equipmentDTO,"equipment");
+                name = "";
+                available = 0;
+                description = "";
+                quantity = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Equipment" + id;
+                await UpdateDTO(apiEndpoint, equipmentDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Equipment" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Equipment";
+            Equipments = await ReadDTO<EquipmentDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Function(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            FunctionDTO functionDTO = new FunctionDTO()
+            {
+                Function_Name = name,
+                Function_Address = address,
+                Function_Description = description,
+                Image_ID = image_ID
+            };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Function";
+                await CreateDTO(apiEndpoint, functionDTO,"function");
+                name = "";
+                address = "";
+                description = "";
+                image_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Function" + id;
+                await UpdateDTO(apiEndpoint, functionDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Function" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Function";
+            Functions = await ReadDTO<FunctionDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Image(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            ImageDTO imageDTO = new ImageDTO()
+                {
+                    Image_Name = name,
+                    Image_Address = address
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Image";
+                await CreateDTO(apiEndpoint, imageDTO,"image");
+                name = "";
+                address = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Image" + id;
+                await UpdateDTO(apiEndpoint, imageDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Image" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Image";
+            Images = await ReadDTO<ImageDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Location(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            LocationDTO locationDTO = new LocationDTO()
+                {
+                    Location_Name = name,
+                    Location_Street = street,
+                    Location_City = city,
+                    Location_County = county,
+                    Location_State = state,
+                    Location_Zip = zip,
+                    Location_Country = country
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Location";
+                await CreateDTO(apiEndpoint, locationDTO,"location");
+                name = "";
+                street = "";
+                city = "";
+                county = "";
+                state = "";
+                zip = "";
+                country = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Location" + id;
+                await UpdateDTO(apiEndpoint, locationDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Location" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Location";
+            Locations = await ReadDTO<LocationDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Opportunity(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            OpportunityDTO opportunityDTO = new OpportunityDTO()
+                {
+                    Opportunity_Name = name,
+                    Opportunity_Phone = phone,
+                    Opportunity_Start_Date = start_date,
+                    Opportunity_End_Date = end_date,
+                    Opportunity_Description = description,
+                    Opportunity_Email = email,
+                    Opportunity_Host_Name = host_name,
+                    OpportunityType_ID = opportunityType_ID,
+                    Image_ID = image_ID,
+                    Location_ID = location_ID,
+                    Role_ID = role_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Opportunity";
+                await CreateDTO(apiEndpoint, opportunityDTO,"opportunity");
+                name = "";
+                phone = "";
+                start_date = new DateTime(1,1,1);
+                end_date = new DateTime(1,1,1);
+                description = "";
+                email= "";
+                host_name = "";
+                opportunityType_ID = 0;
+                image_ID = 0;
+                location_ID = 0;
+                role_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Opportunity" + id;
+                await UpdateDTO(apiEndpoint, opportunityDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Opportunity" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Opportunity";
+            Opportunitys = await ReadDTO<OpportunityDTO>(apiEndpoint);
+        }
+    }
+
+    async Task OpportunityType(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            OpportunityTypeDTO opportunityTypeDTO = new OpportunityTypeDTO()
+                {
+                    OpportunityType_Name = name
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/OpportunityType";
+                await CreateDTO(apiEndpoint, opportunityTypeDTO,"oppportunityType");
+                name = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/OpportunityType" + id;
+                await UpdateDTO(apiEndpoint, opportunityTypeDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/OpportunityType" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/OpportunityType";
+            OpportunityTypes = await ReadDTO<OpportunityTypeDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Registration(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            RegistrationDTO registrationDTO = new RegistrationDTO()
+                {
+                    Registration_Notification = notification,
+                    User_ID = user_ID,
+                    Opportunity_ID = opportunity_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Registration";
+                await CreateDTO(apiEndpoint, registrationDTO,"registration");
+                notification = false;
+                user_ID = 0;
+                opportunity_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Registration" + id;
+                await UpdateDTO(apiEndpoint, registrationDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Registration" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Registration";
+            Registrations = await ReadDTO<RegistrationDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Rental(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            RentalDTO rentalDTO = new RentalDTO()
+                {
+                    Rental_Start_Date = start_date,
+                    Rental_End_Date = end_date,
+                    Rental_Approved = approved,
+                    Rental_Returned = returned,
+                    User_ID = user_ID,
+                    Equipment_ID = equipment_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Rental";
+                await CreateDTO(apiEndpoint, rentalDTO,"rental");
+                start_date = new DateTime(1,1,1);
+                end_date = new DateTime(1,1,1);
+                approved = false;
+                returned = false;
+                user_ID = 0;
+                equipment_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Rental" + id;
+                await UpdateDTO(apiEndpoint, rentalDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Rental" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Rental";
+            Rentals = await ReadDTO<RentalDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Reservation(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            ReservationDTO reservationDTO = new ReservationDTO()
+                {
+                    Reservation_Start_Date = start_date,
+                    Reservation_End_Date = end_date,
+                    Reservation_Notification = notification,
+                    User_ID = user_ID,
+                    Room_ID = room_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Reservation";
+                await CreateDTO(apiEndpoint, reservationDTO,"reservation");
+                start_date = new DateTime(1,1,1);
+                end_date = new DateTime(1,1,1);
+                notification = false;
+                user_ID = 0;
+                room_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Reservation" + id;
+                await UpdateDTO(apiEndpoint, reservationDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Reservation" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Reservation";
+            Reservations = await ReadDTO<ReservationDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Resource(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            ResourceDTO resourceDTO = new ResourceDTO()
+                {
+                    Resource_Name = name,
+                    Resource_Description = description,
+                    Resource_Phone = phone,
+                    Resource_Website = address,
+                    Resource_Eligibility = eligibility,
+                    Image_ID = image_ID,
+                    Location_ID = location_ID,
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Resource";
+                await CreateDTO(apiEndpoint, resourceDTO,"resource");
+                ResourceTagDTO resourceTagDTO = new ResourceTagDTO()
+                {
+                    Resource_ID = resource_ID,
+                    Tag_ID = tag_ID
+                };
+                apiEndpoint = "/api/ResourceTag";
+                await CreateDTO(apiEndpoint, resourceTagDTO, "resourceTag");
+                name = "";
+                description = "";
+                phone = "";
+                address = "";
+                eligibility = "";
+                image_ID = 0;
+                location_ID = 0;
+                resource_ID = 0;
+                tag_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Resource" + id;
+                await UpdateDTO(apiEndpoint, resourceDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Resource" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Resource";
+            Resources = await ReadDTO<ResourceDTO>(apiEndpoint);
+        }
+    }
+
+    async Task ResourceTag(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            ResourceTagDTO resourceTagDTO = new ResourceTagDTO()
+                {
+                    Resource_ID = resource_ID,
+                    Tag_ID = tag_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/ResourceTag";
+                await CreateDTO(apiEndpoint, resourceTagDTO,"resourceTag");
+                resource_ID = 0;
+                tag_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/ResourceTag" + id;
+                await UpdateDTO(apiEndpoint, resourceTagDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/ResourceTag" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/ResourceTag";
+            ResourceTags = await ReadDTO<ResourceTagDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Role(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            RoleDTO roleDTO = new RoleDTO()
+                {
+                    Role_Name = name,
+                    Role_Description = description
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Role";
+                await CreateDTO(apiEndpoint, roleDTO,"role");
+                name = "";
+                description = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Role" + id;
+                await UpdateDTO(apiEndpoint, roleDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Role" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Role";
+            Roles = await ReadDTO<RoleDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Room(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            RoomDTO roomDTO = new RoomDTO()
+                {
+                    Room_Name = name,
+                    Room_Description = description,
+                    Room_Floor = floor,
+                    Room_Number = number,
+                    RoomType_ID = roomType_ID,
+                    Image_ID = image_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Room";
+                await CreateDTO(apiEndpoint, roomDTO,"room");
+                name="";
+                description="";
+                floor = 0;
+                number = 0;
+                roomType_ID = 0;
+                image_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Room" + id;
+                await UpdateDTO(apiEndpoint, roomDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Room" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Room";
+            Rooms = await ReadDTO<RoomDTO>(apiEndpoint);
+        }
+    }
+
+    async Task RoomType(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            RoomTypeDTO roomTypeDTO = new RoomTypeDTO()
+                {
+                    RoomType_Name = name
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/RoomType";
+                await CreateDTO(apiEndpoint, roomTypeDTO,"roomType");
+                name = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/RoomType" + id;
+                await UpdateDTO(apiEndpoint, roomTypeDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/RoomType" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/RoomType";
+            RoomTypes = await ReadDTO<RoomTypeDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Sector(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            SectorDTO sectorDTO = new SectorDTO()
+                {
+                    Sector_Name = name
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Sector";
+                await CreateDTO(apiEndpoint, sectorDTO,"sector");
+                name = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Sector" + id;
+                await UpdateDTO(apiEndpoint, sectorDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Sector" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Sector";
+            Sectors = await ReadDTO<SectorDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Tag(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            TagDTO tagDTO = new TagDTO()
+                {
+                    Tag_Name = name
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Tag";
+                await CreateDTO(apiEndpoint, tagDTO,"tag");
+                name = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Tag" + id;
+                await UpdateDTO(apiEndpoint, tagDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Tag" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Tag";
+            Tags = await ReadDTO<TagDTO>(apiEndpoint);
+        }
+    }
+
+    async Task Training(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            TrainingDTO trainingDTO = new TrainingDTO()
+                {
+                    Training_Name = name,
+                    Training_Certificate = certificate,
+                    Training_Link = link,
+                    Training_Description = description,
+                    Image_ID = image_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/Training";
+                await CreateDTO(apiEndpoint, trainingDTO,"training");
+                name = "";
+                certificate = "";
+                link = "";
+                description = "";
+                image_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/Training" + id;
+                await UpdateDTO(apiEndpoint, trainingDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/Training" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/Training";
+            Trainings = await ReadDTO<TrainingDTO>(apiEndpoint);
+        }
+    }
+
+    async Task User(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            UserDTO userDTO = new UserDTO()
+                {
+                    User_First_Name = first_name,
+                    User_Last_Name = last_name,
+                    User_Email = email,
+                    User_Phone = phone,
+                    User_Password = BCrypt.Net.BCrypt.EnhancedHashPassword(password, 13)
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/User";
+                await CreateDTO(apiEndpoint, userDTO,"user");
+                UserRoleDTO userRoleDTO = new UserRoleDTO()
+                    {
+                        User_ID = user_ID,
+                        Role_ID = role_ID
+                    };
+                apiEndpoint = "/api/UserRole";
+                await CreateDTO(apiEndpoint,userRoleDTO,"userRole");
+                first_name = "";
+                last_name = "";
+                email = "";
+                phone = "";
+                password = "";
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/User" + id;
+                await UpdateDTO(apiEndpoint, userDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/User" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/User";
+            Users = await ReadDTO<UserDTO>(apiEndpoint);
+        }
+    }
+
+    async Task UserRole(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            UserRoleDTO userRoleDTO = new UserRoleDTO()
+                {
+                    User_ID = user_ID,
+                    Role_ID = role_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/UserRole";
+                await CreateDTO(apiEndpoint, userRoleDTO,"userRole");
+                user_ID = 0;
+                role_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/UserRole" + id;
+                await UpdateDTO(apiEndpoint, userRoleDTO);
+                id = 0;
+
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/UserRole" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/UserRole";
+            UserRoles = await ReadDTO<UserRoleDTO>(apiEndpoint);
+        }
+    }
+
+    async Task UserRoom(string operation)
+    {
+        if (String.Equals(operation, "Create") || String.Equals(operation, "Update"))
+        {
+            UserRoomDTO userRoomDTO = new UserRoomDTO()
+                {
+                    User_ID = user_ID,
+                    Room_ID = room_ID
+                };
+            if (String.Equals(operation, "Create"))
+            {
+                apiEndpoint = "/api/UserRoom";
+                await CreateDTO(apiEndpoint, userRoomDTO,"userRoom");
+                user_ID = 0;
+                room_ID = 0;
+            }
+            else if (String.Equals(operation, "Update"))
+            {
+                apiEndpoint = "/api/UserRoom" + id;
+                await UpdateDTO(apiEndpoint, userRoomDTO);
+                id = 0;
+            }
+        }
+        else if (String.Equals(operation, "Delete"))
+        {
+            apiEndpoint = "/api/UserRoom" + id;
+            await DeleteDTO(apiEndpoint);
+            id = 0;
+        }else if (String.Equals(operation, "Read"))
+        {
+            apiEndpoint = "/api/UserRoom";
+            UserRooms = await ReadDTO<UserRoomDTO>(apiEndpoint);
+        }
+    }
+}

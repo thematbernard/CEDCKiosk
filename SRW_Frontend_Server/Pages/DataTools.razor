@@ -1,0 +1,146 @@
+@page "/dataTools"
+@using SRW_Frontend_Server.Data;
+@using SRW_Frontend_Server.DTOs
+
+<style>
+    .links {
+        text-decoration: underline;
+        color: blue;
+    }
+
+    .headers {
+        background-color: lightgrey;
+    }
+</style>
+
+
+<style>
+    .links {
+        text-decoration: underline;
+        color: blue;
+    }
+
+    .headers {
+        background-color: lightgrey;
+    }
+</style>
+
+
+<PageTitle>Data and Tools</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Data and Tools</MudText>
+</div>
+
+@if (!loading)
+{
+    <MudGrid>
+        <MudItem xs="2" />
+        <MudItem xs="8">
+            <MudPaper Width="100%" Class="pa-5">
+                <MudGrid>
+                    <MudItem xs="2"></MudItem>
+                    <MudItem xs="8">
+                        <MudList Clickable="true">
+                            @foreach (var sector in sectors)
+                            {
+                                <MudListItem Text=@sector.Sector_Name InitiallyExpanded="true" Class="headers">
+                                    <NestedList>
+                                        @foreach (var dataset in datasets)
+                                        {
+                                            if (sector.Sector_ID == dataset.Sector_ID)
+                                            {
+                                                <a href=@dataset.Dataset_Link target="_blank">
+                                                    <MudListItem>
+                                                        <div class="links">@dataset.Dataset_Name</div>
+                                                    </MudListItem>
+                                                </a>
+                                            }
+                                        }
+                                    </NestedList>
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Indeterminate="true" />
+    </div>
+}
+
+
+
+@code {
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    private bool loading = true;
+    private List<SectorDTO> sectors { get; set; }
+    private List<DatasetDTO> datasets { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+        await LoadSectors();
+        await LoadDatasets();
+        loading = false;
+    }
+
+    async Task LoadSectors()
+    {
+        try
+        {
+            string apiEndpoint = "/api/Sector";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                sectors = await response.Content.ReadFromJsonAsync<List<SectorDTO>>();
+            }
+        }
+        catch
+        {
+            sectors = new List<SectorDTO>();
+        }
+    }
+
+    async Task LoadDatasets()
+    {
+        try
+        {
+            string apiEndpoint = "/api/Dataset";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                datasets = await response.Content.ReadFromJsonAsync<List<DatasetDTO>>();
+            }
+        }
+        catch (Exception e)
+        {
+            datasets = new List<DatasetDTO>();
+        }
+    }
+}

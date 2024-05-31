@@ -1,0 +1,68 @@
+﻿@inherits LayoutComponentBase
+@using SRW_Frontend_Server.Data;
+@inject NavigationManager uriHelper;
+
+<MudThemeProvider Theme="CEDC_Branding"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        @if (String.Equals(LoginProcessing.UserRole, "Admin"))
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/AdminUI">Manage Website</MudButton>
+        }
+        <MudSpacer />
+        <MudText>Hello, @name</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Home" Color="Color.Inherit" Link="/" />
+        @if(!LoginProcessing.loggedIn)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="/Login">Login</MudButton>
+        }else{
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@LogoutRefresh">Log Out</MudButton>
+        }
+
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
+        <MudDrawerHeader>
+            <MudText Typo="Typo.h6">Clemson University Engagement Hub</MudText>
+        </MudDrawerHeader>
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent style ="min-height:120vh; background-color:lightgray">
+            @Body
+    </MudMainContent>
+    <footer class="mud-theme-primary pa-10">
+        <MudLink Href="/Citations" Color="Color.Tertiary">Citations</MudLink>
+    </footer>
+</MudLayout>
+
+@code {
+    string name { get; set; } = LoginProcessing.Username;
+
+    MudTheme CEDC_Branding = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            Primary = "#00205B",
+            Secondary = "#546223",
+            Tertiary = "#B94700",
+            AppbarBackground = "#00205B",
+        }
+    };
+
+    bool _drawerOpen = false;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    void LogoutRefresh()
+    {
+        LoginProcessing.LogOut();
+        uriHelper.NavigateTo("/", forceLoad: true);
+    }
+
+}

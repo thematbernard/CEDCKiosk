@@ -1,0 +1,299 @@
+﻿@using Microsoft.AspNetCore.Components
+@using System.Globalization;
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@using SRW_Frontend_Server.Data;
+
+@page "/roomReservation"
+
+<PageTitle>Room Reservation</PageTitle>
+
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Room Reservation</MudText>
+</div>
+@if (!loading)
+{
+    <br />
+    <MudGrid>
+        <MudItem sm="3"></MudItem>
+        <MudItem xs="12" sm="6">
+            <MudPaper Elevation="3" class="pa-5">
+                @if (!LoginProcessing.loggedIn)
+                {
+                    <MudText Align="Align.Center" Color="Color.Error">Must be logged in to make a room reservation.</MudText>
+                }
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudSelect @bind-Value="roomType" Label="Select Room Type">
+                            @foreach (var roomType in RoomTypes)
+                            {
+                                <MudSelectItem Value="@roomType.RoomType_Name">@roomType.RoomType_Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudSelect @bind-Value="roomNumber" Label="Select Room Number">
+                            @foreach (var room in Rooms)
+                            {
+                                <MudSelectItem Value="@room.Room_Number">@room.Room_Number</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudDatePicker Label="Date" @bind-Date="date" DisableToolbar="true" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudTimePicker Label="Reservation Start" AmPm="true" @bind-Time="startTime" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudTimePicker Label="Reservation End" AmPm="true" @bind-Time="endTime" />
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudCheckBox T="bool" @bind-Value="@notifications" Label="Enable notifications?"></MudCheckBox>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid>
+                    <MudItem xs="3"></MudItem>
+                    <MudItem xs="6">
+                        <MudButton OnClick="Reserve">Reserve</MudButton>
+                    </MudItem>
+                </MudGrid>
+                @if (reserveSuccess)
+                {
+                    <MudGrid>
+                        <MudItem xs="3"></MudItem>
+                        <MudItem xs="6">
+                            <MudText>Reservation completed successfully!</MudText>
+                        </MudItem>
+                    </MudGrid>
+                }
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Indeterminate="true" />
+    </div>
+}
+
+
+@code {
+    string? roomType { get; set; }
+    int? roomNumber { get; set; }
+    List<RoomTypeDTO> RoomTypes = new List<RoomTypeDTO>();
+    List<ReservationDTO> Reservations = new List<ReservationDTO>();
+    private TimeSpan? startTime = new TimeSpan(00, 45, 00);
+    private TimeSpan? endTime = new TimeSpan(00, 45, 00);
+    bool reserveSuccess = false;
+
+
+    int roomID { get; set; }
+    bool notifications { get; set; } = false;
+
+    int imageID { get; set; }
+    private RoomDTO roomDTO { get; set; }
+    private RoomDTO newroomDTO = new RoomDTO();
+    private RoomDTO updateRoom = new RoomDTO();
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+
+    DateTime? date = DateTime.Today;
+    private List<RoomDTO> Rooms = new List<RoomDTO>();
+
+    private bool loading = true;
+    private string selectedRoomName = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+        await LoadRoomTypes();
+        await LoadRoom();
+
+        loading = false;
+    }
+
+
+    private async Task LoadRoomTypes()
+    {
+        try
+        {
+            //Endpoint to execute GET on all RoomTypeDTOs
+            string apiEndpoint = "/api/RoomType";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    RoomTypes = await response.Content.ReadFromJsonAsync<List<RoomTypeDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    RoomTypes = new List<RoomTypeDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            RoomTypes = new List<RoomTypeDTO>();
+        }
+    }
+
+    private async Task LoadRoom()
+    {
+        try
+        {
+            //Endpoint to execute GET on all RoomDTOs
+            string apiEndpoint = "/api/Room";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Rooms = await response.Content.ReadFromJsonAsync<List<RoomDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    Rooms = new List<RoomDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            Rooms = new List<RoomDTO>();
+        }
+    }
+
+    private async Task LoadReservations()
+    {
+        try
+        {
+            //Endpoint to execute GET on all ReservationDTOs
+            string apiEndpoint = "/api/Reservation";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Reservations = await response.Content.ReadFromJsonAsync<List<ReservationDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    Reservations = new List<ReservationDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            Reservations = new List<ReservationDTO>();
+        }
+    }
+
+
+
+
+    async Task Reserve()
+    {
+        reserveSuccess = false;
+        try
+        {
+            if (!LoginProcessing.loggedIn)
+            {
+                return;
+            }
+
+            if (Rooms != null)
+            {
+                foreach(var room in Rooms)
+                {
+                    if(roomNumber == room.Room_Number)
+                    {
+                        roomID = room.Room_ID;
+                    }
+                }
+            }
+            TimeSpan newStartTime = startTime ?? new TimeSpan(00, 45, 00);
+            TimeSpan newEndTime = endTime ?? new TimeSpan(00, 45, 00);
+            DateTime newDate = date ?? DateTime.Today;
+            // Instantiate
+            var newReservationDTO = new ReservationDTO();
+
+            newReservationDTO.User_ID = LoginProcessing.UserID;
+            newReservationDTO.Room_ID = roomID;
+            newReservationDTO.Reservation_Start_Date = newDate + newStartTime;
+            newReservationDTO.Reservation_End_Date = newDate + newEndTime;
+            newReservationDTO.Reservation_Notification = notifications;
+
+            string apiEndpoint = "/api/Reservation";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiURL, newReservationDTO);
+
+            // Check successful
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Reservation created successfully!");
+                reserveSuccess = true;
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+            throw;
+        }
+    }
+}
+

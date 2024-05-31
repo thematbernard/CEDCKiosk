@@ -1,0 +1,41 @@
+﻿@page "/contact"
+
+<PageTitle>Faculty and Staff Contact</PageTitle>
+
+<div Class="mud-theme-tertiary">
+	<MudText Typo="Typo.h3" Class="pt-5 pl-5 pb-5">Clemson Faculty and Staff Directories</MudText>
+</div>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+	<MudGrid Class ="pt-5 pb-5">
+		@foreach(var college in Colleges)
+		{
+			<MudItem xs="12" sm="6" md="4" lg="3">
+				<MudCard style="height:250px;overflow: hidden;max-width: 100vw;width: 100%;box-sizing: border-box;">
+					<MudCardContent>
+						<MudImage Src=@college.imageLink ObjectFit="ObjectFit.Contain" Fluid="true" />
+						<MudText>@college.name</MudText>
+						<MudButton Href=@college.link Target="_blank">Faculty and Staff Directory</MudButton>
+					</MudCardContent>
+				</MudCard>
+			</MudItem>
+		}
+	</MudGrid>
+</MudContainer>
+
+
+
+@code {
+
+	private readonly List<(string name, string link, string imageLink)> Colleges = new()
+	{
+		("College of Arts and Humanities","https://www.clemson.edu/cah/about/faculty-staff-directory.html","Images/arts-humanities.png"),
+		("College of Architecture, Art, and Construction", "https://www.clemson.edu/cah/about/faculty-staff-directory.html","Images/architecture-art-construction.png"),
+		("College of Agrictulture, Forestry, and Life Sciences","https://www.clemson.edu/cafls/about/directory/index.html","Images/cu-cafls-color-rgb.png"),
+		("College of Behavioral, Social and Health Sciences","https://www.clemson.edu/cbshs/about/directory.html","Images/cbshs.png"),
+		("College of Engineering, Computing, and Applied Sciences","https://www.clemson.edu/cecas/about/programs.html","Images/CECAS-College-Of-Orange-and-Purple.png"),
+		("College of Education","https://www.clemson.edu/education/about/directory/index.html","Images/coe.png"),
+		("College of Science","https://www.clemson.edu/science/academics/departments/index.html","Images/cos.png"),
+		("Wilbur O. and Ann Powers College of Business","https://www.clemson.edu/business/about/directory.html","Images/wapcob.png"),
+	};
+}

@@ -1,0 +1,122 @@
+﻿@page "/"
+@inject NavigationManager Nav
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+
+<PageTitle>Kiosk Menu</PageTitle>
+<div style="background-color:lightgray;">
+    <MudContainer Class="pt-10">
+        <MudText Typo="Typo.h4" Style="font-size:clamp(32px,3vw,48px)" GutterBottom="true" Align="Align.Center">Welcome to the South Carolina Engagement Hub!</MudText>
+        <MudText Class="my-4" Typo="Typo.h3" Style="font-size:clamp(26px,2vw,28px)" Align="Align.Center">Our goal is to connect you with information to help you succeed.</MudText>
+    </MudContainer>
+    <div class="pa-10">
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <a href="/about">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/engagement.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">About Us</MudText>
+                            <MudText Typo="Typo.body2">Learn about the Engagement Hub program and its initiatives</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/communityResources">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/communityResources.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Community Resources</MudText>
+                            <MudText Typo="Typo.body2">Search for local resources in your community!</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/projects">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/projects.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Projects and Research</MudText>
+                            <MudText Typo="Typo.body2">Browse ongoing projects and research opportunities within the Engagement Hub</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/events">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/events.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Events and Announcements</MudText>
+                            <MudText Typo="Typo.body2">Browse upcoming events, workshops, seminars, guest lectures, and important announcements</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/reservationsAndTraining">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/resources.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Reservations and Training</MudText>
+                            <MudText Typo="Typo.body2">Reserve rooms or equipment at the Engagement Hub. Explore training required for accessing equipment</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/help">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/reservation.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Need Help?</MudText>
+                            <MudText Typo="Typo.body2">Get information about how to utilize the website, request help from a staff member, and provide feedback</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/contact">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/contact.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Faculty and Staff Contact</MudText>
+                            <MudText Typo="Typo.body2">Find and connect with the relevant faculty and staff members for academic inquiries, research collaboration, mentoring, and more</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="https://cecas.clemson.edu/cedc/">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/cedc.png" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">CEDC</MudText>
+                            <MudText Typo="Typo.body2">Learn about Clemson Engineers for Developing Communities and how to get involved with our organization</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <a href="/dataTools">
+                    <MudCard Style="height:100%">
+                        <MudCardMedia Image="Images/navigation.jpg" Height="325" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">Datasets and Tools</MudText>
+                            <MudText Typo="Typo.body2">Explore planning datasets and tools.</MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </a>
+            </MudItem>
+        </MudGrid>
+    </div>
+</div>
+
+@code {
+
+}

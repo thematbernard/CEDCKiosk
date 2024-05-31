@@ -1,0 +1,129 @@
+﻿@page "/help"
+@using SRW_Frontend_Server.DTOs
+
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Need Help?</MudText>
+</div>
+<MudText Class="my-4" Typo="Typo.h4" Align="Align.Center">We're Here to Help</MudText>
+<br />
+<MudGrid>
+    <MudItem sm="3"></MudItem>
+    <MudItem xs="12" sm="6">
+        <MudPaper Elevation="3" class="pa-2">
+            <MudText Typo="Typo.h5" Class="pa-2">How do I navigate the website?</MudText>
+            <MudText Class="pa-2">
+                All of our resource types can be found on the home page. You can also utilize the search bar to
+                find specific resources. Certain parts of the website are for reserving spaces or equipment
+                at the Engagement Hub, while others are for accessing information virtually.
+            </MudText>
+            <MudText Typo="Typo.h5" Class="pa-2">If you:</MudText>
+            <div class="pl-5">
+                <MudText>
+                    - Can't find the resource you need.
+                </MudText>
+                <MudText>
+                    - OR Need direct assistance from a staff member.
+                </MudText>
+                <MudText>
+                    - OR Would like to provide us with feedback.
+                </MudText>
+                <MudText>
+                    - OR Would like to recommend additional resources for the website.
+                </MudText>
+            </div>
+            <MudText Class="pa-2" Typo="Typo.h5"> 
+                Please fill out the form below:
+            </MudText>
+            <br />
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="FirstName" Label="First Name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="LastName" Label="Last Name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="Email" Label="Email Address" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="PhoneNumber" Label="Phone Number (optional)" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+                </MudItem>
+            </MudGrid>
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudTextField @bind-Value="Request" T="string" Label="Please detail your request below." Variant="Variant.Text" Lines="5" />
+                </MudItem>
+            </MudGrid>
+            <br />
+            <MudGrid>
+                <MudItem xs="8"></MudItem>
+                <MudButton Class="mud-theme-primary">Submit</MudButton>
+            </MudGrid>
+            <br/>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<br />
+
+
+@code {
+    private string FirstName { get; set; } = string.Empty;
+    private string LastName { get; set; } = string.Empty;
+    private string Email { get; set; } = string.Empty;
+    private string PhoneNumber { get; set; } = string.Empty;
+    private string Request { get; set; } = string.Empty;
+
+    private IConfigurationRoot? configuration;
+    string baseURL { get; set; }
+    private AssistanceDTO assistanceDTO = new AssistanceDTO();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+    }
+
+    async Task SubmitRequest()
+    {
+        try
+        {
+            assistanceDTO.Assistance_First_Name = FirstName;
+            assistanceDTO.Assistance_Last_Name = LastName;
+            assistanceDTO.Assistance_Phone = PhoneNumber;
+            assistanceDTO.Assistance_Email = Email;
+            assistanceDTO.Assistance_Description = Request;
+            assistanceDTO.Assistance_Resolved = false;
+
+            string apiEndpoint = "/api/Assistance";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiURL, assistanceDTO);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.Write("Success");
+            }
+        }
+        catch
+        {
+            throw;
+        }
+    }
+}

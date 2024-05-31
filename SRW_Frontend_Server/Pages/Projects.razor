@@ -1,0 +1,110 @@
+﻿@page "/projects"
+
+@inject IDialogService DialogService
+
+<style>
+    .fixed-card-height {
+        height: 25vh;
+        overflow: hidden;
+        max-width: 100vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+</style>
+
+<PageTitle>Projects and Research</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Internships & Research Opportunities</MudText>
+</div>
+
+<MudGrid Class="my-4" Justify="Justify.Center">
+    @foreach (var resource in cardList)
+    {
+        <MudItem xs="12" sm="6" md="4" lg="3">
+            <MudCard>
+                <div class="card-top-container">
+                    <MudCardMedia Image=@resource.ImagePath Width="200" Height="250" />
+                </div>
+                <div class="fixed-card-height">
+                    <MudCardContent>
+                        <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@resource.Title</b></MudText>
+                        <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@resource.Description</MudText>
+                        <div style="text-align: center;">
+                            @foreach (var chip in resource.Chip)
+                            {
+                                <MudChip Variant="Variant.Text" Color="Color.Primary">@chip</MudChip>
+                            }
+                        </div>
+                    </MudCardContent>
+                    <div style="text-align: center;">
+                        <MudButton Color="Color.Primary" Href=@resource.Link Target="blank">Learn More</MudButton>
+                    </div>
+                </div>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+                        
+    
+
+
+
+
+
+
+@code {
+
+
+
+    private void OpenCustomDialog(MouseEventArgs e, string description, string bullet1, string bullet2, string bullet3, string ButtonTitle, string Link)
+
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", description);
+        parameters.Add("ButtonText", "Continue");
+        parameters.Add("Bullet1", bullet1);
+        parameters.Add("Bullet2", bullet2);
+        parameters.Add("Bullet3", bullet3);
+        parameters.Add("Color", Color.Primary);
+        parameters.Add("ButtonTitle", ButtonTitle);
+        parameters.Add("Link", Link);
+
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        DialogService.Show<Dialog>("", parameters, options);
+    }
+
+    public class CustomDialogParameters
+    {
+        public string ContentText { get; set; }
+        public string ButtonText { get; set; }
+        public string Bullet1 { get; set; }
+        public Color Color { get; set; }
+    }
+
+    private readonly List<(string ImagePath, string Title, string Description, string Link, string ButtonTitle, string Bullet1, string Bullet2, string Bullet3, string Dialogue, List<string> Chip)> cardList = new()
+    {
+        ("/Images/cedc.png",
+            "Internships",
+            "Internships available through the Engagement Hub",
+            "/Internships",
+            "Internships",
+            "",
+            "",
+            "",
+            "Here you will find a list of all the internships that are available through the hub, click to learn more",
+            new List<string> {"Students"}),
+
+        ("/Images/engagement.jpg",
+            "Research Opportunities",
+            "Research opportunities for students, and faculty of relevant interest",
+            "/ResearchOpportunities",
+            "Opportunities",
+            "",
+            "",
+            "",
+            "This is the place if you wish to learn about research or would like to provide a research opportunity",
+            new List<string> {"Students", "Faculty"}),
+    };
+}

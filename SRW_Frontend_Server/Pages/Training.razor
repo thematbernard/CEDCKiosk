@@ -1,0 +1,330 @@
+﻿@page "/Training"
+@inject IDialogService DialogService
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@using SRW_Frontend_Server.Data;
+
+<style>
+
+    .horizontal-card-stack {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .horizontal-card {
+        flex: 1;
+        margin: 8px;
+    }
+
+    .fixed-card-height {
+        height: 25vh;
+        overflow: hidden;
+        max-width: 100vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .top-card-height {
+        height: 7vh;
+        overflow: hidden;
+        max-width: 100vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .highlight-card {
+        background-color: #B94700;
+    }
+</style>
+
+<PageTitle>Training</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Training</MudText>
+</div>
+
+
+<div style="background-color:#f0f0f0" class="pl-5 pr-5">
+    <MudItem>
+        <MudText Class="pa-4" Align="Align.Center" Typo="Typo.body1">
+            <p>Some equipment requires training/certification.</p>
+            <p>Click on the buttons below to see the various equipment and what type of training you may need.</p>
+        </MudText>
+    </MudItem>
+    <MudGrid Class="my-4">
+        <MudItem xs="12" sm="12" md="3">
+            <!-- Left Column -->
+            <div class="justify-content-center">
+                <MudText Typo="Typo.h6">Electronics</MudText>
+            </div>
+            <div style="background-color: lightgrey; text-align: center;">
+                @foreach (var certificateLevel in new[] { "Computer Certificate Level 1", "Computer Certificate Level 2", "Computer Certificate Level 3", "Computer Certificate Level 4" })
+                {
+                        <MudItem>
+                            <div>
+                                <MudButton @onclick="(() => ShowRoom(certificateLevel))"
+                                           Class="@((certificateLevel == selectedRoomName) ? "highlight-card" : "")">
+                                    @certificateLevel
+                                </MudButton>
+                            </div>
+                        </MudItem>
+                }
+            </div>
+            <div class="justify-content-center">
+                <MudText Typo="Typo.h6">Heavy Machinery</MudText>
+            </div>
+            <div style="background-color: lightgrey; text-align: center;">
+                @foreach (var certificateLevel in new[] { "Machiners Certificate Level 1", "Machiners Certificate Level 2", "Machiners Certificate Level 3", "Machiners Certificate Level 4" })
+                {
+                    <MudItem>
+                        <div>
+                            <MudButton @onclick="(() => ShowRoom(certificateLevel))"
+                                       Class="@((certificateLevel == selectedRoomName) ? "highlight-card" : "")">
+                                @certificateLevel
+                            </MudButton>
+                        </div>
+                    </MudItem>
+                }
+            </div>
+            <div class="justify-content-center">
+                <MudText Typo="Typo.h6">Kitchen/Food Pantry</MudText>
+            </div>
+            <div style="background-color: lightgrey; text-align: center;">
+                @foreach (var certificateLevel in new[] { "Kitchen Certificate Level 1", "Kitchen Certificate Level 2", "Kitchen Certificate Level 3", "Kitchen Certificate Level 4" })
+                {
+                    <MudItem>
+                        <div>
+                            <MudButton @onclick="(() => ShowRoom(certificateLevel))"
+                                       Class="@((certificateLevel == selectedRoomName) ? "highlight-card" : "")">
+                                @certificateLevel
+                            </MudButton>
+                        </div>
+                    </MudItem>
+                }
+            </div>
+            <div class="justify-content-center">
+                <MudText Typo="Typo.h6">Makerspaces</MudText>
+            </div>
+            <div style="background-color: lightgrey; text-align: center;">
+                @foreach (var certificateLevel in new[] { "Makerspaces Certificate Level 1", "Makerspaces Certificate Level 2", "Makerspaces Certificate Level 3", "Makerspaces Certificate Level 4" })
+                {
+                    <MudItem>
+                        <div>
+                            <MudButton @onclick="(() => ShowRoom(certificateLevel))"
+                                       Class="@((certificateLevel == selectedRoomName) ? "highlight-card" : "")">
+                                @certificateLevel
+                            </MudButton>
+                        </div>
+                    </MudItem>
+                }
+            </div>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="9">
+            <!-- Right Side -->
+            <MudGrid>
+                @foreach (var electronic in trainingList)
+                {
+                        if (electronic.Training_Certificate == "Computer Certificate Level 1" || 
+                            electronic.Training_Certificate == "Computer Certificate Level 2" ||
+                            electronic.Training_Certificate == "Computer Certificate Level 3" ||
+                            electronic.Training_Certificate == "Computer Certificate Level 4")
+                        {
+                        var isVisible = selectedRoomName == null || selectedRoomName == electronic.Training_Certificate;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@electronic.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@electronic.Training_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@electronic.Training_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href=@electronic.Training_Link Target="blank">@electronic.Training_Name</MudButton>
+                                            </div>
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }    
+                    }
+                }
+                </MudGrid>
+            <MudGrid>
+                @foreach (var machine in trainingList)
+                {
+                    if (machine.Training_Certificate == "Machiners Certificate Level 1" ||
+                    machine.Training_Certificate == "Machiners Certificate Level 2" ||
+                    machine.Training_Certificate == "Machiners Certificate Level 3" ||
+                    machine.Training_Certificate == "Machiners Certificate Level 4")
+                    {
+                        var isVisible = selectedRoomName == null || selectedRoomName == machine.Training_Certificate;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@machine.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@machine.Training_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@machine.Training_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href=@machine.Training_Link Target="blank">@machine.Training_Name</MudButton>
+                                            </div>
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }
+
+                    }
+                }
+            </MudGrid>
+
+            <MudGrid>
+                @foreach (var Kitchen in trainingList)
+                {
+                    if (Kitchen.Training_Certificate == "Kitchen Certificate Level 1" ||
+                    Kitchen.Training_Certificate == "Kitchen Certificate Level 2" ||
+                    Kitchen.Training_Certificate == "Kitchen Certificate Level 3" ||
+                    Kitchen.Training_Certificate == "Kitchen Certificate Level 4")
+                    {
+                        var isVisible = selectedRoomName == null || selectedRoomName == Kitchen.Training_Certificate;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@Kitchen.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@Kitchen.Training_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@Kitchen.Training_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href=@Kitchen.Training_Link Target="blank">@Kitchen.Training_Name</MudButton>
+                                            </div>
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }
+
+                    }
+                }
+            </MudGrid>
+
+            <MudGrid>
+                @foreach (var maker in trainingList)
+                {
+                    if (maker.Training_Certificate == "Makerspaces Certificate Level 1" ||
+                    maker.Training_Certificate == "Makerspaces Certificate Level 2" ||
+                    maker.Training_Certificate == "Makerspaces Certificate Level 3" ||
+                    maker.Training_Certificate == "Makerspaces Certificate Level 4")
+                    {
+                        var isVisible = selectedRoomName == null || selectedRoomName == maker.Training_Certificate;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@maker.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@maker.Training_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@maker.Training_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href=@maker.Training_Link Target="blank">@maker.Training_Name</MudButton>
+                                            </div>
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                }
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+
+    HashSet<string> displayedCertificateNames = new HashSet<string>();
+    string operation { get; set; }
+    int id { get; set; }
+    string name { get; set; }
+    string certificate { get; set; }
+    string link { get; set; }
+    string description { get; set; }
+    int imageID { get; set; }
+    private TrainingDTO trainingDTO { get; set; }
+    private TrainingDTO newtrainingDTO = new TrainingDTO();
+    private TrainingDTO updateTraining = new TrainingDTO();
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+
+    private List<TrainingDTO> trainingList = new List<TrainingDTO>();
+
+    private bool loading = true;
+
+    private string selectedRoomName = null;
+
+    void ShowRoom(string roomName)
+    {
+        if (selectedRoomName == roomName)
+        {
+            selectedRoomName = null;
+        }
+        else
+        {
+            selectedRoomName = roomName;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        await LoadTraining();
+
+        loading = false;
+    }
+
+    private async Task LoadTraining()
+    {
+        try
+        {
+            string apiEndpoint = "/api/Training";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                trainingList = await response.Content.ReadFromJsonAsync<List<TrainingDTO>>();
+            }
+            else
+            {
+
+                trainingList = new List<TrainingDTO>();
+            }
+        }
+        catch (Exception e)
+        {
+            trainingList = new List<TrainingDTO>();
+        }
+    }
+}

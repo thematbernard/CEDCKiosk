@@ -1,0 +1,120 @@
+﻿@page "/events"
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@using SRW_Frontend_Server.Data;
+
+<PageTitle>Events and Announcements</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Events and Announcements</MudText>
+</div>
+
+<MudGrid Class="my-4" Justify="Justify.Center">
+    <MudContainer Class="pa-8">
+        <MudContainer>
+             @foreach (var announcement in opportunity)
+            {
+                if (announcement.OpportunityType_ID == 3) {
+                    <MudCard Class="mb-3">
+                        <MudCardContent>
+                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h6"><b>@announcement.Opportunity_Name</b></MudText>
+                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.body1"><b>@announcement.Opportunity_Start_Date</b></MudText>
+                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.body1">@announcement.Opportunity_Description</MudText>
+                        </MudCardContent> 
+                    </MudCard>
+                }
+            } 
+        </MudContainer>
+    </MudContainer>
+</MudGrid>
+
+<div style="margin: 0 auto; padding: 16px;">
+    <MudList>
+        <MudText GutterBottom="true" Padding="8px" Style="font-size: clamp(28px,6vw,32px)" ><b>Events</b></MudText>
+        <MudGrid>
+            @foreach (var e in opportunity)
+            {
+                if (e.OpportunityType_ID == 1)
+                {
+                    <MudItem xs="12" sm="6" md="4" lg="3">
+                        <MudCard>
+                            <MudCardMedia Image=@e.Image.Image_Address Height=250 />
+                            <div class="fixed-card-height">
+                                <MudCardContent>
+                                    <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h6"><b>@e.Opportunity_Name</b></MudText>
+                                    <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.body2"><b>@e.Opportunity_Start_Date</b></MudText>
+                                    <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.body2"><b>@e.Location.Location_Name</b></MudText>
+                                    <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.body1">@e.Opportunity_Description</MudText>
+                                </MudCardContent>
+
+                            </div>
+                        </MudCard>
+                    </MudItem>
+                }
+            }
+        </MudGrid>
+    </MudList>
+</div>
+<MudDivider />
+
+@code {
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    private List<OpportunityDTO> opportunity = new List<OpportunityDTO>();
+    private List<ImageDTO> Images = new List<ImageDTO>();
+    private bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        await LoadOpportunity();
+
+        loading = false;
+    }
+
+    private async Task LoadOpportunity()
+    {
+        try
+        {
+            //Endpoint to execute GET on all ResourceTagDTOs
+            string apiEndpoint = "/api/Opportunity";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    opportunity = await response.Content.ReadFromJsonAsync<List<OpportunityDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    opportunity = new List<OpportunityDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            opportunity = new List<OpportunityDTO>();
+        }
+    }
+}
+

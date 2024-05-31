@@ -1,0 +1,127 @@
+﻿@page "/Login"
+@using SRW_Frontend_Server.DTOs
+@using SRW_Frontend_Server.Data;
+@inject NavigationManager uriHelper;
+@using System.Text.RegularExpressions;
+@using SRW_Frontend_Server.Models;
+
+<PageTitle>Login</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Login</MudText>
+</div>
+<br />
+
+
+<MudGrid Class="my-4">
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="Username" Label="Username" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="6">
+        <MudTextField @bind-Value="Password" Label="Password" Variant="Variant.Filled" Margin="Margin.Dense" InputType=@PasswordInput Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="ToggleVisibility" AdornmentAriaLabel="Show Password" />
+    </MudItem>
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="3"></MudItem>
+    <MudItem xs="5"></MudItem>
+    <MudItem xs="1">
+        <MudButton @onclick="CheckLogin" Variant="Variant.Filled" Color="Color.Tertiary" Class="pa-3 mt-2" EndIcon="@Icons.Material.Filled.Send" Href="/Login">Login</MudButton>
+    </MudItem>
+</MudGrid>
+<MudGrid Justify="Justify.Center" Style="align-items: center;">
+    <MudItem>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="pa-3 mt-2" Href="/">Continue as Guest</MudButton>
+    </MudItem>
+</MudGrid>
+<MudGrid Justify="Justify.Center" Style="align-items: center;">
+    <MudItem>
+        <MudButton Href="/Signup" Variant="Variant.Filled" Color="Color.Secondary" Class="pa-3 pr-14 pl-14 mt-2">Sign Up</MudButton>
+    </MudItem>
+</MudGrid>
+   
+
+
+
+@code {
+    private string Username { get; set; } = string.Empty;
+    private string Password { get; set; } = string.Empty;
+    private IConfigurationRoot? configuration;
+    private string? baseURL = "https://srwfrontendserver.azurewebsites.net/";
+    private List<UserRoleDTO> userRoles { get; set; }
+    bool LoginSuccess;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            //Endpoint to execute GET on all UserRoleDTOs
+            string apiEndpoint = "/api/UserRole";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                userRoles = await response.Content.ReadFromJsonAsync<List<UserRoleDTO>>();
+            }
+            else
+            {
+                // Handle error here
+                userRoles = new List<UserRoleDTO>();
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            userRoles = new List<UserRoleDTO>();
+        }
+    }
+
+    public void CheckLogin()
+    {
+        if (!string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password))
+        {
+            LoginSuccess = LoginProcessing.VerifyLogin(userRoles, Username, Password);
+            if (LoginSuccess)
+            {
+                uriHelper.NavigateTo("/", forceLoad: true);
+            }
+        }
+    }
+
+
+    bool isShow = false;
+    InputType PasswordInput = InputType.Password;
+    string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    void ToggleVisibility()
+    {
+        @if (isShow)
+        {
+            isShow = false;
+            PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+            PasswordInput = InputType.Password;
+        }
+        else
+        {
+            isShow = true;
+            PasswordInputIcon = Icons.Material.Filled.Visibility;
+            PasswordInput = InputType.Text;
+        }
+    }
+}

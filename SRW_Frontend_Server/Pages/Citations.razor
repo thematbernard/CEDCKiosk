@@ -1,0 +1,81 @@
+@page "/Citations"
+@inject IDialogService DialogService
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@using SRW_Frontend_Server.Data;
+
+
+<PageTitle>Citations</PageTitle>
+
+<div class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Image Citations</MudText>
+</div>
+<div class="pa-10">
+    <MudTable Items="@citations" Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info">
+        <HeaderContent>
+            <MudTh>Title</MudTh>
+            <MudTh>Author</MudTh>
+            <MudTh>Publication Year</MudTh>
+            <MudTh>URL</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="City">@context.Title</MudTd>
+            <MudTd DataLabel="ID">@context.Author</MudTd>
+            <MudTd DataLabel="Name">@context.PublicationYear</MudTd>
+            <MudTd DataLabel="Street">@context.Url</MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
+
+
+
+@code {
+    public class Citation
+    {
+        public string Title { get; set; }
+        public string Author { get; set; }
+        public int PublicationYear { get; set; }
+        public string Url { get; set; }
+    }
+
+    List<Citation> citations = new List<Citation>()
+    {
+        new Citation() { Title = "Anderson Housing Authority", Author = "", PublicationYear = 2024, Url = "https://andersonha.org/" },
+        new Citation() { Title = "Good Shepherds House", Author = "", PublicationYear = 2024, Url = "https://www.transitionalhousing.org/li/sc_29615_the-good-shepherds-house-llc" },
+        new Citation() { Title = "United Housing Connections", Author = "", PublicationYear = 2024, Url = "https://www.unitedhousingconnections.org/" },
+        new Citation() { Title = "Emmanuel's Hammer", Author = "", PublicationYear = 2004, Url = "https://ehammer1.org/about-us/" },
+        new Citation() { Title = "Habitat for Humanity", Author = "", PublicationYear = 1976, Url = "https://en.wikipedia.org/wiki/Habitat_for_Humanity" },
+        new Citation() { Title = "Rebuild Upstate", Author = "", PublicationYear = 2022, Url = "https://rebuildupstate.org/who-we-are/" },
+        new Citation() { Title = "Haven of Rest", Author = "", PublicationYear = 1960, Url = "https://www.havenofrest.cc/" },
+        new Citation() { Title = "Family Promise", Author = "", PublicationYear = 1986, Url = "https://familypromise.org/" },
+        new Citation() { Title = "SC Housing", Author = "", PublicationYear = 2024, Url = "https://www.schousing.com/" },
+        new Citation() { Title = "United Way of Anderson", Author = "", PublicationYear = 1946, Url = "https://www.unitedwayofanderson.org/" },
+        new Citation() { Title = "Clemson Community Care", Author = "", PublicationYear = 1988, Url = "https://www.clemsoncommunitycare.org/" },
+        new Citation() { Title = "Homeless Period Project", Author = "", PublicationYear = 2015, Url = "https://homelessperiodproject.org/" },
+        new Citation() { Title = "HOPE Missions", Author = "", PublicationYear = 2024, Url = "https://hopeupstate.org/" },
+        new Citation() { Title = "Anderson Emergency Soup Kitchen", Author = "", PublicationYear = 1982, Url = "https://andersonemergencykitchen.org/" },
+        new Citation() { Title = "Anderson County Human Resources Office", Author = "", PublicationYear = 2024, Url = "https://www.andersoncountysc.org/work-live/for-residents/human-resources/" },
+        new Citation() { Title = "Anderson County Economic Development", Author = "", PublicationYear = 2024, Url = "https://acedsc.org/" },
+        new Citation() { Title = "Anderson County Library System", Author = "", PublicationYear = 2024, Url = "https://www.andersonlibrary.org/" },
+        new Citation() { Title = "SC Works WorkLink", Author = "", PublicationYear = 2024, Url = "https://worklinkweb.com/en/" },
+        new Citation() { Title = "CEDC", Author = "", PublicationYear = 2009, Url = "https://clemson.campuslabs.com/engage/organization/cedc" },
+        new Citation() { Title = "Meeting Room", Author = "freepix", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/modern-office-interior-with-flat-design_2942216.htm#fromView=search&page=1&position=3&uuid=ae78a639-ee6c-4eae-8a20-6c4184adf3d8" },
+        new Citation() { Title = "Cartoon kitchen interior illustration", Author = "pikisuperstar", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/cartoon-kitchen-interior-illustration_15570828.htm#fromView=search&page=1&position=17&uuid=6014cfe9-d6eb-41f7-b332-fcbc7b50211b" },
+        new Citation() { Title = "Office - background for video conferencing", Author = "pikisuperstar", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/office-background-video-conferencing_9892493.htm#fromView=search&page=1&position=36&uuid=519f0206-5c31-4d56-a357-556ed8f7050a" },
+        new Citation() { Title = "Work team joining puzzle pieces, brainstorming, collaboration, partnership concept", Author = "jcomp", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/work-team-joining-puzzle-pieces-brainstorming-collaboration-partnership-concept_12953783.htm" },
+        new Citation() { Title = "People using search box for query, engine giving result. Vector illustration for SEO work, SERP, online promotion, content marketing concept", Author = "SurfupVector", PublicationYear = 2024, Url = "https://stock.adobe.com/images/People-using-search-box-for-query%2C-engine-giving-result.-Vector-illustration-f/383808520?as_campaign=TinEye&as_content=tineye_match&clickref=1101lyrZEk4x&mv=affiliate&mv2=pz&as_camptype=backlink&as_channel=affiliate&as_source=partnerize&as_campaign=tineye" },
+        new Citation() { Title = "Business team discussing ideas for startup", Author = "pch.vector", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/business-team-discussing-ideas-startup_6974855.htm" },
+        new Citation() { Title = "Vector calendar reminder date spiral icon and red circle style simple calendar mark the date holiday important", Author = "drogatnev", PublicationYear = 2024, Url = "https://www.freepik.com/premium-vector/calendar-reminder-date-spiral-icon-red-circle-style-simple-calendar-mark-date-holiday-important-day-concepts-vector-illustration-flat-style_26469809.htm#query=calendar&position=12&from_view=keyword&track=sph&uuid=9a728bc9-7105-423e-acad-6bf91033a813" },
+        new Citation() { Title = "Employees giving hands and helping colleagues to walk upstairs", Author = "pch.vector", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/employees-giving-hands-helping-colleagues-walk-upstairs_7732609.htm" },
+        new Citation() { Title = "Creative office workers discussing ideas in team isolated flat illustration", Author = "pch.vector", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/creative-office-workers-discussing-ideas-team-isolated-flat-illustration-cartoon-illustration_12698384.htm" },
+        new Citation() { Title = "Employers choosing candidates for job interview", Author = "Surfsup", PublicationYear = 2024, Url = "https://www.shutterstock.com/image-vector/employers-choosing-candidates-job-interview-hr-1682299096?irclickid=XmM2erTuqxyPRQjxi8wMFxieUkHTiIRgEx4FQ80&irgwc=1&pl=77643-108110&utm_campaign=TinEye&utm_content=108110&utm_medium=Affiliate&utm_source=77643&utm_term=" },
+        new Citation() { Title = "Tiny people using mobile application with map outdoors", Author = "pch.vector", PublicationYear = 2024, Url = "https://www.freepik.com/free-vector/tiny-people-using-mobile-application-with-map-outdoors_9650838.htm" },
+
+
+    };
+}
+

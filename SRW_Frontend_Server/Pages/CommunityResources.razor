@@ -1,0 +1,236 @@
+﻿@page "/communityResources"
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+
+@if (!loading)
+{
+    <PageTitle>Training</PageTitle>
+    <div Class="mud-theme-tertiary pa-5">
+        <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Resources</MudText>
+    </div>
+    <MudText Class="my-4" Typo="Typo.h4" Align="Align.Center">Search</MudText>
+    <MudGrid Class="my-4">
+        <MudItem xs="2"></MudItem>
+        <MudItem xs="8">
+            <MudAutocomplete T="string" @bind-Value="ResourceTagFilter" SearchFunc="searchResourceTags" Label="Search..." ResetValueOnEmptyText="true" MaxItems="10" Dense="true" Class="fixed-filter" Immediate="true">
+                <ItemTemplate Context="e">
+                    <MudHighlighter Text="@e" HighlightedText="@highlightFilter" />
+                </ItemTemplate>
+            </MudAutocomplete>
+        </MudItem>
+        <MudItem xs="2"></MudItem>
+        <MudItem xs="2"></MudItem>
+        <MudItem xs="8">
+            @foreach (var chipFilter in chipFilters)
+            {
+                <MudChip Text="@chipFilter" Variant="Variant.Text" Color="Color.Primary" OnClose="() => RemoveChip(chipFilter)"></MudChip>
+            }
+        </MudItem>
+        <MudItem xs="2"></MudItem>
+    </MudGrid>
+
+    <MudDivider />
+    <br />
+
+    <MudGrid>
+        <MudItem xs="1"></MudItem>
+        <MudItem xs="1" class="d-md-none"></MudItem>
+        <MudItem xs="8">
+            @foreach (var resourceTag in resourceTags
+           .Where(resourceTag => ResultsFilter(resourceTag))
+           .Skip((_selected - 1) * pageSize)
+           .Take(pageSize))
+            {
+                <MudGrid>
+                    <MudItem xs="4" class="d-none d-sm-none d-md-flex justify-center">
+                        <MudImage ObjectFit="ObjectFit.Contain" Style="max-width:20vw; max-height:20vh" Src="@resourceTag?.Resource?.Image?.Image_Address" Class="rounded-lg" />
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudText Typo="Typo.h5">@resourceTag?.Resource?.Resource_Name</MudText>
+                        <MudText Typo="Typo.body2">
+                            @resourceTag?.Resource?.Resource_Description
+                        </MudText>
+                        <br />
+                        <MudText Typo="Typo.body2">Address: @GenerateCompleteAddress(resourceTag?.Resource?.Location)</MudText>
+                        <MudText Typo="Typo.body2">Phone Number: @resourceTag?.Resource?.Resource_Phone</MudText>
+                        <MudText Typo="Typo.body2">Do I qualify? @resourceTag?.Resource?.Resource_Eligibility</MudText>
+                        <MudLink Href="@resourceTag?.Resource?.Resource_Website" Target="_blank">Learn More</MudLink>
+                    </MudItem>
+                    <MudDivider />
+                </MudGrid>
+                <br />
+            }
+        </MudItem>
+    </MudGrid>
+
+    <div class="d-flex justify-center">
+        <MudPagination Color="Color.Primary" Count="CalculateTotalPages()" @bind-Selected="@_selected" />
+    </div>
+    <br/>
+    <MudText Align="Align.Center">Page: @_selected</MudText>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Indeterminate="true" />
+    </div>
+}
+
+@code {
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+
+    private List<ResourceTagDTO> resourceTags { get; set; }
+
+    private List<string> chipFilters = new List<string>();
+
+    private string resourceTagFilter = "";
+    private string highlightFilter = "";
+
+    private bool loading = true;
+
+    private int _selected = 1;
+    private int pageSize = 10; // Set the desired page size here
+
+
+    private string ResourceTagFilter
+    {
+        get => resourceTagFilter;
+        set
+        {
+            if (resourceTagFilter != value)
+            {
+                resourceTagFilter = value;
+                AddChipToFilters(resourceTagFilter);
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        await LoadResourceTags();
+
+        loading = false;
+    }
+
+    private async Task LoadResourceTags()
+    {
+        try
+        {
+            //Endpoint to execute GET on all ResourceTagDTOs
+            string apiEndpoint = "/api/ResourceTag";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync(apiURL);
+
+            if (response.IsSuccessStatusCode)
+            {
+                resourceTags = await response.Content.ReadFromJsonAsync<List<ResourceTagDTO>>();
+            }
+            else
+            {
+                // Handle error here
+                resourceTags = new List<ResourceTagDTO>();
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            resourceTags = new List<ResourceTagDTO>();
+        }
+    }
+    
+    private bool ResultsFilter(ResourceTagDTO resourceTag)
+    {
+        if (chipFilters.Count == 0)
+        {
+            return true; // No chips selected, include all resources
+        }
+
+        foreach (var chip in chipFilters)
+        {
+            if (resourceTag.Resource.Resource_Name.Contains(chip, StringComparison.OrdinalIgnoreCase)
+                || resourceTag.Resource.Location.Location_County.Contains(chip, StringComparison.OrdinalIgnoreCase)
+                || resourceTag.Tag.Tag_Name.Contains(chip, StringComparison.OrdinalIgnoreCase))
+            {
+                return true; // If the resource name contains any selected chip, include it
+            }
+        }
+
+        return false; // No selected chips match, exclude the resource
+    }
+
+    private async Task<IEnumerable<string>> searchResourceTags(string value)
+    {
+        highlightFilter = value;
+        IEnumerable<string> uniqueResources;
+        IEnumerable<string> uniqueCounties;
+        IEnumerable<string> uniqueTags;
+        IEnumerable<string> uniqueFilters;
+
+        uniqueResources = resourceTags.Select(x => x?.Resource?.Resource_Name).Where(x => x != null).Distinct();
+        uniqueCounties = resourceTags.Select(x => x?.Resource?.Location?.Location_County).Where(x => x != null).Distinct();
+        uniqueTags = resourceTags.Select(x => x?.Tag?.Tag_Name).Where(x => x != null).Distinct();
+        uniqueFilters = uniqueResources.Concat(uniqueCounties).Concat(uniqueTags).OrderBy(x => x);
+
+        // Filter out strings present in chipFilters
+        uniqueFilters = uniqueFilters.Except(chipFilters);
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return uniqueFilters;
+        }
+        else
+        {
+            return uniqueFilters.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+        }
+    }
+
+    private void AddChipToFilters(string selectedItem)
+    {
+        if (!string.IsNullOrWhiteSpace(selectedItem))
+        {
+            AddChip(selectedItem);
+            resourceTagFilter = "";
+        }
+    }
+
+    void AddChip(string chip)
+    {
+        chipFilters.Add(chip);
+    }
+
+    void RemoveChip(string chip)
+    {
+        chipFilters.Remove(chip);
+    }
+
+    private string GenerateCompleteAddress(LocationDTO location)
+    {
+        return $"{location?.Location_Street}, {location?.Location_City}, {location?.Location_State}, {location?.Location_Country} {location?.Location_Zip}";
+    }
+
+    private int CalculateTotalPages()
+    {
+        return (int)Math.Ceiling(resourceTags
+            .Count(resourceTag => ResultsFilter(resourceTag)) / (double)pageSize);
+    }
+}

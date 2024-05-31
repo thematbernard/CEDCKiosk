@@ -1,0 +1,217 @@
+﻿@page "/equipment"
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@using SRW_Frontend_Server.Data;
+
+
+@using Microsoft.AspNetCore.Components
+@using System.Globalization;
+@inject IDialogService DialogService
+
+<PageTitle>Equipment Reservation</PageTitle>
+
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Equipment Reservation</MudText>
+</div>
+
+
+<div class="pa-10"> 
+    <MudPaper>
+        @if (!LoginProcessing.loggedIn)
+        {
+            <MudText Align="Align.Center" Color="Color.Error">Must be logged in to make an equipment reservation.</MudText>
+        }
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudSelect @bind-Value="equipmentSelected" T="string" Label="Equipment Type" AnchorOrigin="Origin.BottomCenter">
+                    @foreach(var item in Equipments)
+                    {
+                        <MudSelectItem Value="@(item.Equipment_Name)" />
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudNumericField @bind-Value="numReserved" Label="Amount to Reserve" Variant="Variant.Text" Min="0" Max="10" />
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudDatePicker Label="Pickup Date" @bind-Date="startDate" DisableToolbar="true" />
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudDatePicker Label="Return Date" @bind-Date="endDate" DisableToolbar="true" />
+            </MudItem>
+        </MudGrid>
+        <MudGrid>
+            <MudItem xs="3"></MudItem>
+            <MudItem xs="6">
+                <MudButton OnClick="Reserve">Reserve</MudButton>
+            </MudItem>
+        </MudGrid>
+        @if (rentalSuccess)
+        {
+            <MudGrid>
+                <MudItem xs="3"></MudItem>
+                <MudItem xs="6">
+                    <MudText>Reservation completed successfully!</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+    </MudPaper>
+</div>
+
+<div style="background-color:#f0f0f0; margin-top: 20px;">
+    <MudContainer Class="my-4" Style="max-width: 75vw">
+            <MudGrid>
+                @foreach (var equip in Equipments)
+                {
+                    <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                        <MudCard Style="display-flex;min-height:100px">
+                            <MudCardMedia Image=@equip.Image.Image_Address Height=250 />
+                            <MudCardContent>
+                                <MudText Style="font-size:clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@equip.Equipment_Name</b></MudText>
+                                <MudText Style="font-size:clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@equip.Equipment_Description</MudText>
+                                <MudText Style="font-size:clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">Number Available @equip.Equipment_Available</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+    </MudContainer>
+</div>
+
+@code {
+    private DateTime? startDate = DateTime.Today;
+    private DateTime? endDate = DateTime.Today;
+    int numReserved = 0;
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    private List<EquipmentDTO> Equipments = new List<EquipmentDTO>();
+    private bool loading = true;
+    string equipmentSelected{ get; set; }
+    int equipment_ID{ get; set; }
+    bool rentalSuccess = false;
+
+
+    private string selectedRoomName = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        await LoadEquipment();
+
+        loading = false;
+    }
+
+    private async Task LoadEquipment()
+    {
+        try
+        {
+            //Endpoint to execute GET on all ResourceTagDTOs
+            string apiEndpoint = "/api/Equipment";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Equipments = await response.Content.ReadFromJsonAsync<List<EquipmentDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    Equipments = new List<EquipmentDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            Equipments = new List<EquipmentDTO>();
+        }
+    }
+
+    async Task Reserve()
+    {
+        rentalSuccess = false;
+        try
+        {
+            if (!LoginProcessing.loggedIn)
+            {
+                return;
+            }
+
+            if (Equipments != null)
+            {
+                foreach (var equipment in Equipments)
+                {
+                    if (String.Equals(equipmentSelected,equipment.Equipment_Name))
+                    {
+                        equipment_ID = equipment.Equipment_ID;
+                    }
+                }
+            }
+            DateTime newStartDate = startDate ?? DateTime.Today;
+            DateTime newEndDate = endDate ?? DateTime.Today;
+            // Instantiate
+            var newRentalDTO = new RentalDTO()
+                {
+                    User_ID = LoginProcessing.UserID,
+                    Equipment_ID = equipment_ID,
+                    Rental_Approved = false,
+                    Rental_Returned = false,
+                    Rental_Start_Date = newStartDate,
+                    Rental_End_Date = newEndDate
+                };
+
+            string apiEndpoint = "/api/Rental";
+            string apiURL = baseURL + apiEndpoint;
+
+            using var httpClient = new HttpClient();
+            var response = await httpClient.PostAsJsonAsync(apiURL, newRentalDTO);
+
+            // Check successful
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Rental created successfully!");
+                rentalSuccess = true;
+            }
+            else
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+            throw;
+        }
+    }
+}

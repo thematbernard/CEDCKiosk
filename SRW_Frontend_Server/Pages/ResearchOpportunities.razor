@@ -1,0 +1,222 @@
+﻿@page "/researchOpportunities"
+@using SRW_Frontend_Server.DTOs
+@using System.Net.Http.Headers;
+@using System.Text;
+@using Newtonsoft.Json;
+@using Microsoft.Extensions.Configuration;
+@inject IDialogService DialogService
+@using SRW_Frontend_Server.Data;
+
+<style>
+    .fixed-card-height {
+        height: 250px;
+        overflow: hidden;
+        max-width: 100vw;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .highlight {
+        background-color: #B94700;
+        color: white;
+    }
+
+</style>
+
+<PageTitle>Research Opportunities</PageTitle>
+<div Class="mud-theme-tertiary pa-5">
+    <MudText Typo="Typo.h2" GutterBottom="true" Align="Align.Center">Research</MudText>
+</div>
+
+
+<div style="background-color:#f0f0f0" class="pl-5 pr-5">
+    <MudGrid Class="my-4">
+        <MudItem xs="12" sm="12" md="3">
+            <!-- Left Side -->
+            <MudItem>
+                <div class="justify-content-center">
+                    <MudText Typo="Typo.h6">Organizations</MudText>
+                </div>
+            </MudItem>
+            <div style="background-color: lightgrey; text-align: center;">
+                @{
+                    // Initialize a HashSet to store unique Opportunity_Host_Names
+                    var uniqueHostNames = new HashSet<string>();
+
+                    foreach (var ResearchOpportunity in opportunity)
+                    {
+                        // Check if the current host name has not been displayed before
+                        if (ResearchOpportunity.OpportunityType_ID == 0 && !uniqueHostNames.Contains(ResearchOpportunity.Opportunity_Host_Name))
+                        {
+                            // Add the current host name to the HashSet
+                            uniqueHostNames.Add(ResearchOpportunity.Opportunity_Host_Name);
+
+                            <MudItem>
+                                <div>
+                                    <MudButton @onclick="(() => ShowResearchOpportunity(ResearchOpportunity.Opportunity_Host_Name))"
+                                               Class="@((selectedResearchOpportunityName != null && selectedResearchOpportunityName == ResearchOpportunity.Opportunity_Host_Name) ? "highlight" : "")">
+                                        @ResearchOpportunity.Opportunity_Host_Name
+                                    </MudButton>
+                                </div>
+                            </MudItem>
+                        }
+                    }
+                }
+            </div>
+            <MudItem>
+                <div class="justify-content-center">
+                    <MudText Typo="Typo.h6">Majors</MudText>
+                </div>
+            </MudItem>
+            <div style="background-color: lightgrey; text-align: center;">
+                @{
+                    foreach (var ResearchOpportunity in opportunity)
+                    {
+                        // Check if the current host name has not been displayed before
+                        if (ResearchOpportunity.OpportunityType_ID == 5 && !uniqueHostNames.Contains(ResearchOpportunity.Opportunity_Host_Name))
+                        {
+                            // Add the current host name to the HashSet
+                            uniqueHostNames.Add(ResearchOpportunity.Opportunity_Host_Name);
+
+                            <MudItem>
+                                <div>
+                                    <MudButton @onclick="(() => ShowResearchOpportunity(ResearchOpportunity.Opportunity_Host_Name))"
+                                               Class="@((selectedResearchOpportunityName != null && selectedResearchOpportunityName == ResearchOpportunity.Opportunity_Host_Name) ? "highlight" : "")">
+                                        @ResearchOpportunity.Opportunity_Host_Name
+                                    </MudButton>
+                                </div>
+                            </MudItem>
+                        }
+                    }
+                }
+            </div>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="9">
+            <!-- Right Side -->
+            <MudGrid>
+                @foreach (var ResearchOpportunity in opportunity)
+                {
+                    if (ResearchOpportunity.OpportunityType_ID == 0){
+                    var isVisible = selectedResearchOpportunityName == null || selectedResearchOpportunityName == ResearchOpportunity.Opportunity_Host_Name;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@ResearchOpportunity.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@ResearchOpportunity.Opportunity_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@ResearchOpportunity.Opportunity_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href= Target="blank">@ResearchOpportunity.Opportunity_Name</MudButton>
+                                            </div>  
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                }
+                @foreach (var ResearchOpportunity in opportunity)
+                {
+                    if (ResearchOpportunity.OpportunityType_ID == 5){
+                    var isVisible = selectedResearchOpportunityName == null || selectedResearchOpportunityName == ResearchOpportunity.Opportunity_Host_Name;
+                        if (isVisible)
+                        {
+                            <MudItem xs="12" sm="6" md="4" lg="3" Class="pr-8">
+                                <MudCard>
+                                    <MudCardMedia Image=@ResearchOpportunity.Image.Image_Address Height=250 />
+                                    <div class="fixed-card-height">
+                                        <MudCardContent>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Typo="Typo.h5"><b>@ResearchOpportunity.Opportunity_Name</b></MudText>
+                                            <MudText Style="font-size: clamp(14px,3vw,16px)" Class="pb-8" Typo="Typo.body2">@ResearchOpportunity.Opportunity_Description</MudText>
+                                            <div class="text-center">
+                                                <MudButton Color="Color.Primary" Href= Target="blank">@ResearchOpportunity.Opportunity_Name</MudButton>
+                                            </div>  
+                                        </MudCardContent>
+                                    </div>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    }
+                }
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+</div>
+
+
+@code {
+    private IConfigurationRoot? configuration;
+    private string? baseURL;
+    private List<OpportunityDTO> opportunity = new List<OpportunityDTO>();
+    private List<ImageDTO> Images = new List<ImageDTO>();
+    private bool loading = true;
+    private string selectedResearchOpportunityName = null;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+        baseURL = configuration.GetSection("ApiUrls")["BackendDevelopment"];
+
+
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        loading = true;
+
+        await LoadOpportunity();
+
+        loading = false;
+    }
+
+    private async Task LoadOpportunity()
+    {
+        try
+        {
+            //Endpoint to execute GET on all ResourceTagDTOs
+            string apiEndpoint = "/api/Opportunity";
+            string apiURL = baseURL + apiEndpoint;
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(apiURL);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    opportunity = await response.Content.ReadFromJsonAsync<List<OpportunityDTO>>();
+                }
+                else
+                {
+                    // Handle error here
+                    opportunity = new List<OpportunityDTO>();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            // Handle exception here
+            opportunity = new List<OpportunityDTO>();
+        }
+    }
+
+    void ShowResearchOpportunity(string internshipName)
+    {
+        if (selectedResearchOpportunityName == internshipName)
+        {
+            selectedResearchOpportunityName = null;
+        }
+        else
+        {
+            selectedResearchOpportunityName = internshipName;
+        }
+    }
+}
